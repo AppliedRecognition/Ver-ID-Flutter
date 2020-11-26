@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
+import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:veridflutterplugin/veridflutterplugin.dart';
 
@@ -24,14 +24,17 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    String pluginProcessResult;
+    Map<String, dynamic> result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       //platformVersion = await Veridflutterplugin.platformVersion;
-      platformVersion =
-          await Veridflutterplugin.load('efe89f85-b71f-422b-a068-605c3f62603b');
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      result = await Veridflutterplugin.load(
+          null); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+      pluginProcessResult = result.toString();
+    } on PlatformException catch (ex) {
+      pluginProcessResult = 'Uncaught Platform Exception';
+      developer.log(ex.message.toString());
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -40,7 +43,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _loadResult = platformVersion;
+      _loadResult = pluginProcessResult;
     });
   }
 
@@ -49,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Ver-ID plugin example app'),
         ),
         body: Center(
           //child: Text('Running on: $_platformVersion\n' ),
