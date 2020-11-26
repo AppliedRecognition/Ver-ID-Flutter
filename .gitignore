@@ -1,7 +1,10 @@
 .DS_Store
 .dart_tool/
-
+.gradle/**
 .packages
 .pub/
-
+.idea/**
 build/
+example/ios/Podfile.lock
+example/pubspec.lock
+pubspec.lock
