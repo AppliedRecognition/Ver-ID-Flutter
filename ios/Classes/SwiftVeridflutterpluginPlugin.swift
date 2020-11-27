@@ -329,7 +329,7 @@ import VerIDUI
         }
     }
 
-    private func startSession<T: VerIDSessionSettings>(_ result: FlutterResult, settings: T) {
+    private func startSession<T: VerIDSessionSettings>(settings: T) {
         guard self.result == nil else {
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
             self.sendResult(FlutterError.init( code: "SESSION_START_ERROR",
