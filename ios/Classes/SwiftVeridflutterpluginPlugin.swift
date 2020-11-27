@@ -32,8 +32,8 @@ import VerIDUI
     }
   }
   //we do not use the callback ID, we use the result/call on each invocation, lets fix this
-    private var result: FlutterResult
-    private var call: FlutterMethodCall
+    private var result: FlutterResult?
+    private var call: FlutterMethodCall?
     
   //import from original CP
     
@@ -56,15 +56,15 @@ import VerIDUI
 
     @objc public func registerUser(_ call: FlutterMethodCall) {
         if self.TESTING_MODE {
-            self.result(self.getAttachmentMockup());
+            self.result!(self.getAttachmentMockup());
             /*self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)*/
         } else {
             do {
-                let settings: RegistrationSessionSettings = try self.createSettings([call.arguments])
+                let settings: RegistrationSessionSettings = try self.createSettings([call.arguments as Any])
                 //create settins object as an incoming array, NOT a dictionary and send to method
-                self.startSession(self.result, settings: settings)
+                self.startSession(self.result!, settings: settings)
             } catch {
-                self.result(FlutterError.init(code: "REGISTER_USER_ERROR",
+                self.result!(FlutterError.init(code: "REGISTER_USER_ERROR",
                                          message: error.localizedDescription,
                                          details: nil))
                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
@@ -75,15 +75,15 @@ import VerIDUI
     //@objc public func authenticate(_ command: CDVInvokedUrlCommand) {
     @objc public func authenticate(_ call: FlutterMethodCall) {
         if self.TESTING_MODE {
-            self.result(self.getAttachmentMockup())
+            self.result!(self.getAttachmentMockup())
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)
         } else {
             do {
-                let settings: AuthenticationSessionSettings = try self.createSettings([call.arguments])
-                self.startSession(self.result, settings: settings)
+                let settings: AuthenticationSessionSettings = try self.createSettings([call.arguments as Any])
+                self.startSession(self.result!, settings: settings)
             } catch {
                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
-                self.result(FlutterError.init( code: "AUTHENTICATION_ERROR",
+                self.result!(FlutterError.init( code: "AUTHENTICATION_ERROR",
                                                 message: error.localizedDescription,
                                                 details: nil))
             }
@@ -93,14 +93,14 @@ import VerIDUI
     @objc public func captureLiveFace(_ call: FlutterMethodCall) {
         if self.TESTING_MODE {
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)
-            self.result(self.getAttachmentMockup())
+            self.result!(self.getAttachmentMockup())
         } else {
             do {
-                let settings: LivenessDetectionSessionSettings = try self.createSettings([call.arguments])
-                self.startSession(self.result, settings: settings)
+                let settings: LivenessDetectionSessionSettings = try self.createSettings([call.arguments as Any])
+                self.startSession(self.result!, settings: settings)
             } catch {
                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
-                self.result(FlutterError.init( code: "CAPTURE_LIVE_FACE_ERROR",
+                self.result!(FlutterError.init( code: "CAPTURE_LIVE_FACE_ERROR",
                                                 message: error.localizedDescription,
                                                 details: nil))
             }
@@ -108,7 +108,7 @@ import VerIDUI
     }
 
     @objc public func getRegisteredUsers(_ call: FlutterMethodCall) {
-        self.loadVerID(self.result) { verid in
+        self.loadVerID(self.result!) { verid in
             var err: String = "Unknown error"
             do {
                 let users = try verid.userManagement.users()
@@ -116,7 +116,7 @@ import VerIDUI
                     let usersResult = self.TESTING_MODE ? "[\"user1\", \"user2\", \"user3\"]" : usersString;
                     //let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersResult)
                     //self.commandDelegate.send(result, callbackId: command.callbackId)
-                    self.result(usersResult)
+                    self.result!(usersResult)
                     return
                 } else {
                     err = "Failed to encode JSON as UTF-8 string"
@@ -126,7 +126,7 @@ import VerIDUI
                 
             }
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err), callbackId: command.callbackId)
-            self.result(FlutterError.init( code: "GET_REGISTERED_USERS_ERROR",
+            self.result!(FlutterError.init( code: "GET_REGISTERED_USERS_ERROR",
                                             message: err,
                                             details: nil))
         }
@@ -135,23 +135,23 @@ import VerIDUI
     @objc public func deleteUser(_ call: FlutterMethodCall) {
         //the below used optional chaining on ?.compactMap
         if let userId = [call.arguments].compactMap({ ($0 as? [String:String])?["userId"] }).first {
-            self.loadVerID(self.result) { verid in
+            self.loadVerID(self.result!) { verid in
                 verid.userManagement.deleteUsers([userId]) { error in
                     if let err = error {
                         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err.localizedDescription), callbackId: command.callbackId)
-                        self.result(FlutterError.init( code: "DELETE_USER_ERROR",
+                        self.result!(FlutterError.init( code: "DELETE_USER_ERROR",
                                                         message: err.localizedDescription,
                                                         details: nil))
                         return
                     }
                     //let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "OK")
                     //self.commandDelegate.send(result, callbackId: command.callbackId)
-                    self.result("OK")
+                    self.result!("OK")
                 }
             }
         } else {
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse userId argument"), callbackId: command.callbackId)
-            self.result(FlutterError.init( code: "DELETE_USER_ERROR",
+            self.result!(FlutterError.init( code: "DELETE_USER_ERROR",
                                             message: "Unable to parse userId argument",
                                             details: nil))
         }
@@ -159,7 +159,7 @@ import VerIDUI
 
     @objc public func compareFaces(_ call: FlutterMethodCall) {
         if let t1 = [call.arguments].compactMap({ ($0 as? [String:String])?["face1"] }).first?.data(using: .utf8), let t2 = [call.arguments].compactMap({ ($0 as? [String:String])?["face2"] }).first?.data(using: .utf8) {
-            self.loadVerID(self.result) { verid in
+            self.loadVerID(self.result!) { verid in
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         if let template1 = try JSONDecoder().decode(CodableFace.self, from: t1).recognizable,
@@ -168,12 +168,12 @@ import VerIDUI
                             DispatchQueue.main.async {
                                 let message: [String:Any] = ["score":score,"authenticationThreshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
                                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
-                                self.result(message)
+                                self.result!(message)
                             }
                         } else {
                             DispatchQueue.main.async {
                                //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse template1 and/or template2 arguments"), callbackId: command.callbackId)
-                                self.result(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
+                                self.result!(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
                                                                 message: "Unable to parse template1 and/or template2 arguments",
                                                                 details: nil))
                             }
@@ -181,7 +181,7 @@ import VerIDUI
                     } catch {
                         DispatchQueue.main.async {
                             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
-                            self.result(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
+                            self.result!(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
                                                             message: error.localizedDescription,
                                                             details: nil))
                         }
@@ -191,7 +191,7 @@ import VerIDUI
         } else {
             DispatchQueue.main.async {
                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse template1 and/or template2 arguments"), callbackId: command.callbackId)
-                self.result(FlutterError.init( code: "TEMPLATE_ARGUMENT_PARSE_ERROR",
+                self.result!(FlutterError.init( code: "TEMPLATE_ARGUMENT_PARSE_ERROR",
                                                 message: "Unable to parse template1 and/or template2 arguments",
                                                 details: nil))
             }
@@ -199,7 +199,7 @@ import VerIDUI
     }
 
     @objc public func detectFaceInImage(_ call: FlutterMethodCall) {
-        self.loadVerID(self.result) { verid in
+        self.loadVerID(self.result!) { verid in
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     // the below was previously commands.arguments
@@ -251,12 +251,12 @@ import VerIDUI
                     }
                     DispatchQueue.main.async {
                         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: encodedFace), callbackId: command.callbackId)
-                        self.result(encodedFace)
+                        self.result!(encodedFace)
                     }
                 } catch {
                     DispatchQueue.main.async {
                         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
-                        self.result(FlutterError.init( code: "DETECT_FACE_IN_IMAGE_ERROR",
+                        self.result!(FlutterError.init( code: "DETECT_FACE_IN_IMAGE_ERROR",
                                                         message: error.localizedDescription,
                                                         details: nil))
                     }
@@ -278,7 +278,7 @@ import VerIDUI
                 if let message = String(data: try JSONEncoder().encode(CodableSessionResult(result)), encoding: .utf8) {
                     DispatchQueue.main.async {
                         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
-                        self.result(message)
+                        self.result!(message)
                     }
                     return
                 } else {
@@ -289,7 +289,7 @@ import VerIDUI
             }
             DispatchQueue.main.async {
                 //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err), callbackId: callbackId)
-                self.result(FlutterError.init( code: "SESSION_ERROR",
+                self.result!(FlutterError.init( code: "SESSION_ERROR",
                                                 message: err,
                                                 details: nil))
             }
@@ -304,7 +304,7 @@ import VerIDUI
         }
         self.veridSessionCallbackId = nil
         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
-        result("");
+        result!("");
     }
 
 
@@ -357,7 +357,7 @@ import VerIDUI
         //self.veridSessionCallbackId = command.callbackId
         let veridFactory: VerIDFactory
         
-        if let password = [self.call.arguments].compactMap({ ($0 as? [String:String])?["password"] }).first {
+        if let password = [self.call!.arguments].compactMap({ ($0 as? [String:String])?["password"] }).first {
             veridFactory = VerIDFactory(veridPassword: password)
         } else {
             veridFactory = VerIDFactory()
@@ -372,7 +372,7 @@ import VerIDUI
             self.verid = instance
             
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
-            self.result("")
+            self.result!("")
         }
     }
 
@@ -381,18 +381,18 @@ import VerIDUI
             self.veridSessionCallbackId = nil
             self.verid = nil
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: callbackId)
-            self.result(error.localizedDescription)
+            self.result!(error.localizedDescription)
         }
     }
     //Start Methods For Testing
 
     //Cordova action: setTestingMode
     @objc public func setTestingMode(_ result: FlutterResult) {
-        if let mode: Bool = [self.call.arguments][0] as? Bool {
+        if let mode: Bool = [self.call!.arguments][0] as? Bool {
             NSLog("SetTestingMode Called:" + mode.description)
             self.TESTING_MODE = mode
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
-            self.result("")
+            self.result!("")
         } else {
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Not or Invalid Argutments provided"), callbackId: command.callbackId)
             result(FlutterError.init( code: "SET_TESTING_MODE_ERROR",
