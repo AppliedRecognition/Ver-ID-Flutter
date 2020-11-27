@@ -23,8 +23,28 @@ import VerIDUI
     self.call = call
     if (call.method == "load") {
         self.load()
+    } else if (call.method == "unload") {
+        self.unload()
+    } else if (call.method == "registerUser") {
+        self.registerUser(call)
+    } else if (call.method == "captureLiveFace") {
+        self.captureLiveFace(call)
+    } else if (call.method == "authenticate") {
+        self.authenticate(call)
+    } else if (call.method == "getRegisteredUsers") {
+        self.getRegisteredUsers(call)
+    } else if (call.method == "compareFaces") {
+        self.compareFaces(call)
+    } else if (call.method == "deleteUser") {
+        self.deleteUser(call)
+    } else if (call.method == "detectFaceInImage") {
+        self.detectFaceInImage(call)
+    } else if (call.method == "setTestingMode") {
+        self.setTestingMode()
     } else {
-        //self.sendResult(FlutterError.init())
+        self.sendResult(FlutterError.init(code: "INVALID_CALL",
+                                           message: "The call method is invalid, method: \(call.method)",
+                                           details: nil))
     }
   }
   //we do not use the callback ID, we use the result/call on each invocation, lets fix this
@@ -44,7 +64,7 @@ import VerIDUI
         }
     }
 
-    @objc public func unload(_ result: FlutterResult) {
+    @objc public func unload() {
         self.verid = nil
         self.sendResult("OK");
         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "OK"), callbackId: command.callbackId)
@@ -371,14 +391,14 @@ import VerIDUI
     public func veridFactory(_ factory: VerIDFactory, didFailWithError error: Error) {
         self.verid = nil
         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: callbackId)
-        self.sendResult(error.localizedDescription)
+        self.sendResult("{ \"error\": \"\(error.localizedDescription)\"}")
     }
     //Start Methods For Testing
 
     //Cordova action: setTestingMode
-    @objc public func setTestingMode(_ result: FlutterResult) {
+    @objc public func setTestingMode() {
         if let mode: Bool = [self.call!.arguments][0] as? Bool {
-            NSLog("SetTestingMode Called:" + mode.description)
+            NSLog("SetTestingMode Called: \(mode.description)")
             self.TESTING_MODE = mode
             //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
             self.sendResult("OK")
