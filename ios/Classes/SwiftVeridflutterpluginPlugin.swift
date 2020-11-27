@@ -3,7 +3,7 @@ import UIKit
 import VerIDCore
 import VerIDUI
 
-@objc (VeridflutterpluginPlugin) public class SwiftVeridflutterpluginPlugin: NSObject, FlutterPlugin, VerIDFactoryDelegate, VerIDSessionDelegate {
+@objc (SwiftVeridflutterpluginPlugin) public class SwiftVeridflutterpluginPlugin: NSObject, FlutterPlugin, VerIDFactoryDelegate, VerIDSessionDelegate {
     
   //to remove error for cannot be constructed because it has no accessible initializers
     public override init() {
