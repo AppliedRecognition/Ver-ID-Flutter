@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'dart:convert';
+import 'src/VerID.dart';
 
 class Veridflutterplugin {
   static const MethodChannel _channel =
@@ -26,20 +27,35 @@ class Veridflutterplugin {
     }
   }
 
-  static Future<Map> load(String password) async {
-    String result = "";
+  /**
+   * Load Ver-ID
+   * @param password Ver-ID API password (if omitted the library will look in the app's plist (iOS) or manifest (Android))
+   * @returns Promise whose resolve function's argument contains the loaded Ver-ID instance
+   * @example
+   * ```typescript
+   *
+   * verid.load().then(instance => {
+   *    // You can now call instance methods
+   * }).catch(error => {
+   *    // Load failed
+   * });
+   * ```
+   */
+  static Future<VerID> load({String password}) async {
+    String tempResult, result = "";
     Map<String, dynamic> resultJson = new Map<String, dynamic>();
-    try {
-      result = await _channel.invokeMethod('load', {"password": password});
-    } on PlatformException catch (ex) {
+    VerID resultObj;
+
+    tempResult = await _channel.invokeMethod('load', {"password": password});
+    resultObj = new VerID();
+    /*} on PlatformException catch (ex) {
       developer.log(ex.toString());
       result = createJsonError(ex.message.toString());
     } catch (ex) {
       developer.log(ex.toString());
-    } finally {
-      resultJson = jsonDecode(result);
-      return resultJson;
-    }
+    */
+    developer.log(tempResult);
+    return resultObj;
   }
 
   static Future<Map> unload() async {
