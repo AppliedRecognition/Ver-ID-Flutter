@@ -18,7 +18,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 ## Adding Ver-ID Person Plugin to Your Flutter App
 
 1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-1. Clone the plugin Git repo into your file system, specify the git repository, or install using the Cordova CLI.  
+1. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.  
 
 
 	1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
@@ -36,7 +36,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 
 		~~~bash
 		dependencies:
-          verid_flutter_plugin: '>=0.1.0'
+          veridflutterplugin: '>=0.1.0'
 		~~~
 
     1. Specify the repository (master branch):
@@ -58,7 +58,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 
 
 1. If your app includes iOS platform, please be patient as we are working on finalizing iOS support at this point in time.
-4. If your app includes Android platform:
+4. If your app includes the Android platform:
     - Ensure your app targets Android API level 21 or newer. Open your Cordova project's **config.xml** file and add the following entry:
         
         ~~~xml
@@ -74,6 +74,21 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 Ver-ID must be loaded before you can run face detection sessions or compare faces.
 
 The load operation may take up to a few of seconds. Load Ver-ID using the `load` call:
+
+~~~dart
+    VerID result;
+    // Platform messages may fail, so we use a try/catch with the PlatformException
+    try {
+      //platformVersion = await Veridflutterplugin.platformVersion;
+      result = await Veridflutterplugin
+          .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+      pluginProcessResult = "VerID instance loaded successfully.";
+    } on PlatformException catch (ex) {
+      pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
+      developer.log(ex.message.toString());
+    }
+~~~
+
 
 
 ### Face detection session without asking for poses

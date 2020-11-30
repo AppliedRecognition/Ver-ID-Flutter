@@ -214,7 +214,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         loadVerIDAndRun(args, result, new Runnable() {
           @Override
           public void run() {
-            result.success("{}");
+            result.success("{ msg: \"OK\" }");
           }
         });
       } catch (Exception ex) {
