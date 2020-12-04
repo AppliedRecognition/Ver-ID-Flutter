@@ -214,7 +214,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         loadVerIDAndRun(args, result, new Runnable() {
           @Override
           public void run() {
-            result.success("{}");
+            result.success("{ msg: \"OK\" }");
           }
         });
       } catch (Exception ex) {
@@ -409,7 +409,6 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   @Override
   public boolean onActivityResult(int requestCode, final int resultCode, final Intent intent) {
     synchronized (this) {
-      //super.onActivityResult(requestCode, resultCode, intent);
       if (mResult != null && (requestCode == REQUEST_CODE_REGISTER || requestCode == REQUEST_CODE_AUTHENTICATE || requestCode == REQUEST_CODE_DETECT_LIVENESS)) {
         VerIDSessionResult result;
         Gson gson = new Gson();
@@ -472,8 +471,6 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
       }
     });
   }
-
-
 
   protected void loadVerIDAndRun(final JSONArray args, final Result result, final Runnable runnable) {
     final Activity activity = this.activeUIActivityRef;
