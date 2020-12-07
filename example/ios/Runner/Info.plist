@@ -41,5 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>com.appliedrec.verid.password</key>
+	<string>efe89f85-b71f-422b-a068-605c3f62603b</string>
 </dict>
 </plist>
