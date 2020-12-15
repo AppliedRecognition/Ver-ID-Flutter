@@ -17,7 +17,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _loadResult = 'Unknown';
-
+  String _operationResult = '';
+  LiveTests liveTests = new LiveTests();
   @override
   void initState() {
     super.initState();
@@ -37,28 +38,40 @@ class _MyAppState extends State<MyApp> {
     } on PlatformException catch (ex) {
       pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
       developer.log(ex.message.toString());
+    } on String catch (e) {
+      pluginProcessResult = e;
+      developer.log(e);
     }
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
+    setState(() {
+      _loadResult = pluginProcessResult;
+    });
   }
 
-  Future<void> load() async {
-    VerID result = await LiveTests.load();
-    /*setState(() {
-      _loadResult = result;
-    });*/
+  void onError(e) {
+    if (e != null) {
+      setState(() {
+        _operationResult = 'Error is: $e';
+      });
+    }
+  }
+  void onSuccess(message) {
+    setState(() {
+      _operationResult = 'Success: $message';
+    });
   }
 
   List<Widget> getButtonList() {
     List<RaisedButton> buttons = [];
     buttons.add(createButton('load', () {
-      load();
+      liveTests.load().then(onSuccess).catchError(onError);
     }));
     buttons.add(createButton('Register User', () {
-      LiveTests.registerUser('userId');
+      liveTests.registerUser('userId').then(onSuccess).catchError(onError);
     }));
     return buttons;
   }
@@ -73,7 +86,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> content = [Center(child: Text('Load result: $_loadResult\n'))];
+    List<Widget> content = [
+      Center(child: Text('Load result: $_loadResult\n')),
+      Center(child: Text('Operation result: $_operationResult\n'))
+    ];
     content.addAll(getButtonList().map((Widget button) {
       return button;
     }).toList());
