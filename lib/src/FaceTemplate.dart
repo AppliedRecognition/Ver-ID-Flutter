@@ -18,4 +18,9 @@ class FaceTemplate {
    * Template version
    */
   int version = 0;
+
+  FaceTemplate.fromJson(Map<String, dynamic> json) {
+    this.data = json["data"];
+    this.version = json["version"];
+  }
 }

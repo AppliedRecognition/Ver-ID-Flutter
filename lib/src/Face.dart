@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'FaceTemplate.dart';
 
 /**
@@ -68,5 +70,20 @@ class Face {
       num quality}) {
     //TODO: pending implementation
     new FaceTemplate();
+  }
+
+  Face.fromJson(Map<String, dynamic> json) {
+    this.x = json["x"];
+    this.y = json["y"];
+    this.width = json["width"];
+    this.height = json["height"];
+    this.yaw = json["yaw"];
+    this.pitch = json["pitch"];
+    this.roll = json["roll"];
+    this.leftEye = json["leftEye"];
+    this.data = json["data"];
+    this.rightEye = json["rightEye"];
+    this.quality = json["quality"];
+    this.faceTemplate = FaceTemplate.fromJson(json["faceTemplate"]);
   }
 }

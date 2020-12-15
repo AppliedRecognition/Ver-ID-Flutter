@@ -1,4 +1,4 @@
-import 'package:veridflutterplugin/src/VerIDSessionSettings.dart';
+import 'VerIDSessionSettings.dart';
 import 'Bearing.dart';
 
 /**

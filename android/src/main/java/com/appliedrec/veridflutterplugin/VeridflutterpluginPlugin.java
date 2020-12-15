@@ -93,6 +93,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     //TODO - test with unit tests
     //save reference to activity for use in load
     this.activeUIActivityRef = binding.getActivity();
+    binding.addActivityResultListener(this);
   }
 
   public void onDetachedFromActivityForConfigChanges() {
@@ -103,6 +104,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
     //TODO - test with unit tests
     this.activeUIActivityRef = binding.getActivity();
+    binding.addActivityResultListener(this);
   }
 
   public void onDetachedFromActivity() {
@@ -141,7 +143,9 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   // in the same class.
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "veridflutterplugin");
-    channel.setMethodCallHandler(new VeridflutterpluginPlugin());
+    VeridflutterpluginPlugin plugin = new VeridflutterpluginPlugin();
+    channel.setMethodCallHandler(plugin);
+    registrar.addActivityResultListener(plugin);
   }
 
   private JSONArray getLegacyArgs(MethodCall call) {
@@ -194,6 +198,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
     final Activity activity = this.activeUIActivityRef;
     final JSONArray args = getLegacyArgs(call);
+    mResult = result;
     if (call.method.equals("setTestingMode")) {
       if (call.argument("testingMode")) {
         try {

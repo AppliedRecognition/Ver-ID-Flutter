@@ -42,18 +42,12 @@ class Veridflutterplugin {
    * ```
    */
   static Future<VerID> load({String password}) async {
-    String tempResult, result = "";
-    Map<String, dynamic> resultJson = new Map<String, dynamic>();
+    String tempResult;
     VerID resultObj;
 
     tempResult = await _channel.invokeMethod('load', {"password": password});
     resultObj = new VerID();
-    /*} on PlatformException catch (ex) {
-      developer.log(ex.toString());
-      result = createJsonError(ex.message.toString());
-    } catch (ex) {
-      developer.log(ex.toString());
-    */
+
     developer.log(tempResult);
     return resultObj;
   }
