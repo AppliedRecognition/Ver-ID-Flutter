@@ -391,7 +391,7 @@ import VerIDUI
     public func veridFactory(_ factory: VerIDFactory, didFailWithError error: Error) {
         self.verid = nil
         //self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: callbackId)
-        self.sendResult("{ \"error\": \"\(error.localizedDescription)\"}")
+        self.sendResult(FlutterError(code: "Starting Plugin Error", message: error.localizedDescription, details: nil))
     }
     //Start Methods For Testing
 
