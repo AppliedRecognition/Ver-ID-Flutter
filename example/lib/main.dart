@@ -71,9 +71,29 @@ class _MyAppState extends State<MyApp> {
       liveTests.load().then(onSuccess).catchError(onError);
     }));
     buttons.add(createButton('Register User', () {
-      liveTests.registerUser('userId').then(onSuccess).catchError(onError);
+      liveTests.registerUser('userId').then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(createButton('Authenticate', () {
+      liveTests.authenticate('userId').then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(createButton('Capture Live Face', () {
+      liveTests.captureLiveFace().then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(createButton('Get Registered Users', () {
+      liveTests.getRegisteredUsers().then(onSuccess).catchError(onError);
+    }));
+    buttons.add(createButton('Delete registered User', () {
+      liveTests.deleteRegisteredUser('userId').then(onSuccess).catchError(onError);
     }));
     return buttons;
+  }
+
+  void handleSessionResult(session) {
+    if (session.error != null) {
+      onError(session.error.toString());
+    } else {
+      onSuccess(session);
+    }
   }
 
   Widget createButton(String name, Function callback) {
