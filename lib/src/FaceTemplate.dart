@@ -23,4 +23,13 @@ class FaceTemplate {
     this.data = json["data"];
     this.version = json["version"];
   }
+  /**
+   * to JSON mapper for string conversion
+   */
+  Map<String, dynamic> toJson() {
+    return {
+      'data': this.data,
+      'version': this.version
+    };
+  }
 }

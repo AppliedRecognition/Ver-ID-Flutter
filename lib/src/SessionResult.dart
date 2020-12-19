@@ -28,7 +28,7 @@ class SessionResult {
       this.attachments = attachments;
     }
     if (json["error"] != null) {
-      this.error = jsonDecode(json["error"]);
+      this.error = VerIDError.fromJson(json["error"]);
     }
   }
 }

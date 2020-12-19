@@ -1,5 +1,6 @@
 import 'VerIDSessionSettings.dart';
 import 'Bearing.dart';
+import 'dart:convert';
 
 /**
  * Settings for liveness detection sessions
@@ -20,4 +21,15 @@ class LivenessDetectionSessionSettings extends VerIDSessionSettings {
    * The bearings the session will draw from when asking for a random pose
    */
   List<Bearing> bearings = LivenessDetectionSessionSettings.DEFAULT_BEARINGS;
+
+  /**
+   * to JSON mapper for string conversion
+   */
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = super.toJson();
+    json.addAll({
+      'bearings': jsonEncode(bearings.map((e) => e.toString()).toList()),
+    });
+    return json;
+  }
 }
