@@ -108,6 +108,10 @@ class RegistrationSessionSettings extends VerIDSessionSettings {
             break;
         }
       });
+
+      if (json.containsKey("numberOfResultsToCollect")) {
+        this.numberOfResultsToCollect = json["numberOfResultsToCollect"];
+      }
     }
   }
 
@@ -118,7 +122,8 @@ class RegistrationSessionSettings extends VerIDSessionSettings {
     Map<String, dynamic> json = super.toJson();
     json.addAll({
       'userId': userId,
-      'bearingsToRegister': jsonEncode(bearingsToRegister.map((e) => e.toString()).toList()),
+      'bearingsToRegister':
+          jsonEncode(bearingsToRegister.map((e) => e.toString()).toList()),
     });
     return json;
   }
