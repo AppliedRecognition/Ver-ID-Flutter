@@ -44,7 +44,7 @@ class Face {
   /**
    * leftEye
    */
-  List leftEye = [];
+  List<num> leftEye = [];
   /**
    * Data used for face recognition
    */
@@ -88,9 +88,9 @@ class Face {
     this.yaw = json["yaw"];
     this.pitch = json["pitch"];
     this.roll = json["roll"];
-    this.leftEye = json["leftEye"];
+    this.leftEye = json["leftEye"].cast<num>();
     this.data = json["data"];
-    this.rightEye = json["rightEye"];
+    this.rightEye = json["rightEye"].cast<num>();
     this.quality = json["quality"];
     this.faceTemplate = FaceTemplate.fromJson(json["faceTemplate"]);
   }
