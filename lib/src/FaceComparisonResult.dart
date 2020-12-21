@@ -24,4 +24,16 @@ class FaceComparisonResult {
    * Maximum possilbe score
    */
   int max = 0;
+
+  FaceComparisonResult.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey("score")) {
+      score = int.parse(json["score"]);
+    }
+    if (json.containsKey("authenticationThreshold")) {
+      authenticationThreshold = int.parse(json["authenticationThreshold"]);
+    }
+    if (json.containsKey("max")) {
+      max = int.parse(json["max"]);
+    }
+  }
 }

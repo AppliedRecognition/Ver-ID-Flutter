@@ -45,7 +45,6 @@ class Face {
    * leftEye
    */
   List leftEye = [];
-
   /**
    * Data used for face recognition
    */
@@ -54,7 +53,7 @@ class Face {
   /**
    * rightEye
    */
-  List rightEye = [];
+  List<num> rightEye = [];
 
   /**
    * Quality of the face landmarks (10 maximum)
@@ -66,19 +65,19 @@ class Face {
    */
   FaceTemplate faceTemplate;
 
-  Face({num px,
-    num py,
-    num pwidth,
-    num pheight,
-    num pyaw,
-    num ppitch,
-    num proll,
-    List pLeftEye,
-    String data,
-    List pRightEye,
-    num quality}) {
-    //TODO: pending implementation
-    new FaceTemplate();
+  Face(
+      {num px,
+      num py,
+      num pwidth,
+      num pheight,
+      num pyaw,
+      num ppitch,
+      num proll,
+      List pLeftEye,
+      String data,
+      List pRightEye,
+      num quality}) {
+    this.faceTemplate = new FaceTemplate();
   }
 
   Face.fromJson(Map<String, dynamic> json) {

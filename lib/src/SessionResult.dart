@@ -24,7 +24,9 @@ class SessionResult {
     }
     if (json["attachments"] != null) {
       List<dynamic> dynamicList = json["attachments"];
-      List<DetectedFace> attachments = dynamicList.map((detectedFace) => DetectedFace.fromJson(detectedFace)).toList();
+      List<DetectedFace> attachments = dynamicList
+          .map((detectedFace) => DetectedFace.fromJson(detectedFace))
+          .toList();
       this.attachments = attachments;
     }
     if (json["error"] != null) {
