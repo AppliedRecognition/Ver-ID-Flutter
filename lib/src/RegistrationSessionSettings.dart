@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 
 import 'VerIDSessionSettings.dart';
@@ -30,10 +32,12 @@ class RegistrationSessionSettings extends VerIDSessionSettings {
    * @param userId ID of the user whose faces should be registered
    */
   RegistrationSessionSettings(
-      {@required String puserId, List<Bearing> pbearingsToRegister})
+      {@required String userId, List<Bearing> bearingsToRegister})
       : super() {
-    this.userId = puserId;
-    this.bearingsToRegister = pbearingsToRegister;
+    this.userId = userId;
+    if (bearingsToRegister != null && bearingsToRegister.length > 0) {
+      this.bearingsToRegister = bearingsToRegister;
+    }
     this.numberOfResultsToCollect = 1;
   }
 
@@ -104,16 +108,23 @@ class RegistrationSessionSettings extends VerIDSessionSettings {
             break;
         }
       });
-    }
 
-    /**
-     * to JSON mapper for string conversion
-     */
-    Map<String, dynamic> toJson() {
-      return {
-        'userId': userId,
-        'bearingsToRegister': bearingsToRegister,
-      };
+      if (json.containsKey("numberOfResultsToCollect")) {
+        this.numberOfResultsToCollect = json["numberOfResultsToCollect"];
+      }
     }
+  }
+
+  /**
+   * to JSON mapper for string conversion
+   */
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = super.toJson();
+    json.addAll({
+      'userId': userId,
+      'bearingsToRegister':
+          jsonEncode(bearingsToRegister.map((e) => e.toString()).toList()),
+    });
+    return json;
   }
 }

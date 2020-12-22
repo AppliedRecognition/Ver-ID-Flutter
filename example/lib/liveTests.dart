@@ -1,27 +1,122 @@
 import 'package:veridflutterplugin/veridflutterplugin.dart';
 import 'package:veridflutterplugin/src/VerID.dart';
 import 'dart:async';
-import 'dart:developer' as developer;
-import 'package:flutter/services.dart';
+import 'package:veridflutterplugin/src/RegistrationSessionSettings.dart';
+import 'package:veridflutterplugin/src/AuthenticationSessionSettings.dart';
+import 'package:veridflutterplugin/src/LivenessDetectionSessionSettings.dart';
+import 'package:veridflutterplugin/src/SessionResult.dart';
+import 'package:veridflutterplugin/src/Bearing.dart';
+import 'package:veridflutterplugin/src/Face.dart';
+import 'package:veridflutterplugin/src/FaceComparisonResult.dart';
+
+const verIdNotInitialized = 'VerID Instance not initialized';
 
 class LiveTests {
-  // Todo add more test functions
-  static void registerUser(String userId) {}
+  static LiveTests instance;
+  VerID verID;
 
-  static Future<VerID> load() async {
-    String pluginProcessResult;
-    VerID verID;
-    ;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      //platformVersion = await Veridflutterplugin.platformVersion;
-      verID = await Veridflutterplugin
-          .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
-      pluginProcessResult = "";
-    } on PlatformException catch (ex) {
-      pluginProcessResult = 'Uncaught Platform Exception';
-      developer.log(ex.message.toString());
+  static LiveTests getInstance() {
+    if (instance == null) {
+      instance = new LiveTests();
     }
-    return verID;
+    return instance;
+  }
+  // Todo add more test functions
+  Future<SessionResult> registerUser(String userId) async {
+    if (verID != null) {
+      RegistrationSessionSettings settings =
+          new RegistrationSessionSettings(userId: userId);
+      settings.bearingsToRegister = [Bearing.RIGHT];
+      settings.showResult = true;
+      return VerID.register(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<SessionResult> authenticate(String userId) async {
+    if (verID != null) {
+      AuthenticationSessionSettings settings =
+          new AuthenticationSessionSettings(userId: userId);
+      return VerID.authenticate(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<SessionResult> captureLiveFace() async {
+    if (verID != null) {
+      LivenessDetectionSessionSettings settings =
+          new LivenessDetectionSessionSettings();
+      return VerID.captureLiveFace(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  /**
+   * Get a list of users with registered faces
+   */
+  Future<List<String>> getRegisteredUsers() async {
+    if (verID != null) {
+      return VerID.getRegisteredUsers();
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  /**
+   * Delete user with registered faces
+   * @param userId ID of the user to delete
+   */
+  Future<String> deleteRegisteredUser(String userId) async {
+    if (verID != null) {
+      return VerID.deleteRegisteredUser(userId);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<FaceComparisonResult> compareFaces(Face face1, Face face2) async {
+    if (verID != null) {
+      return VerID.compareFaces(face1: face1, face2: face2);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<Face> detectFaceInImage(String imageData) async {
+    if (verID != null) {
+      return VerID.detectFaceInImage(image: imageData);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<VerID> load() {
+    return Veridflutterplugin.load().then((instance) =>
+        verID = instance); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+  }
+
+  Future<String> unload() {
+    return Veridflutterplugin.unload().then((result) {
+      verID = null;
+      return "OK";
+    });
   }
 }

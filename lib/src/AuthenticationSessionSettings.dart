@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-
+import 'Bearing.dart';
 import 'LivenessDetectionSessionSettings.dart';
 
 /**
@@ -16,5 +16,14 @@ class AuthenticationSessionSettings extends LivenessDetectionSessionSettings {
    */
   AuthenticationSessionSettings({@required String userId}) : super() {
     this.userId = userId;
+  }
+
+  /**
+   * to JSON mapper for string conversion
+   */
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> json = super.toJson();
+    json.addAll({'userId': userId});
+    return json;
   }
 }
