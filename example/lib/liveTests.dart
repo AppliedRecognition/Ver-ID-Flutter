@@ -6,11 +6,21 @@ import 'package:veridflutterplugin/src/AuthenticationSessionSettings.dart';
 import 'package:veridflutterplugin/src/LivenessDetectionSessionSettings.dart';
 import 'package:veridflutterplugin/src/SessionResult.dart';
 import 'package:veridflutterplugin/src/Bearing.dart';
+import 'package:veridflutterplugin/src/Face.dart';
+import 'package:veridflutterplugin/src/FaceComparisonResult.dart';
 
 const verIdNotInitialized = 'VerID Instance not initialized';
 
 class LiveTests {
+  static LiveTests instance;
   VerID verID;
+
+  static LiveTests getInstance() {
+    if (instance == null) {
+      instance = new LiveTests();
+    }
+    return instance;
+  }
   // Todo add more test functions
   Future<SessionResult> registerUser(String userId) async {
     if (verID != null) {
@@ -77,6 +87,14 @@ class LiveTests {
   Future<String> deleteRegisteredUser(String userId) async {
     if (verID != null) {
       return VerID.deleteRegisteredUser(userId);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
+  Future<FaceComparisonResult> compareFaces(Face face1, Face face2) async {
+    if (verID != null) {
+      return VerID.compareFaces(face1: face1, face2: face2);
     } else {
       throw verIdNotInitialized;
     }

@@ -5,6 +5,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:veridflutterplugin/veridflutterplugin.dart';
 import 'package:veridflutterplugin/src/VerID.dart';
+import 'uiUtils.dart';
+import 'compareFacesView.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +20,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _loadResult = 'Unknown';
   String _operationResult = '';
-  LiveTests liveTests = new LiveTests();
+  LiveTests liveTests = LiveTests.getInstance();
   @override
   void initState() {
     super.initState();
@@ -65,29 +67,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  List<Widget> getButtonList() {
-    List<RaisedButton> buttons = [];
-    buttons.add(createButton('load', () {
-      liveTests.load().then(onSuccess).catchError(onError);
-    }));
-    buttons.add(createButton('Register User', () {
-      liveTests.registerUser('userId').then(handleSessionResult).catchError(onError);
-    }));
-    buttons.add(createButton('Authenticate', () {
-      liveTests.authenticate('userId').then(handleSessionResult).catchError(onError);
-    }));
-    buttons.add(createButton('Capture Live Face', () {
-      liveTests.captureLiveFace().then(handleSessionResult).catchError(onError);
-    }));
-    buttons.add(createButton('Get Registered Users', () {
-      liveTests.getRegisteredUsers().then(onSuccess).catchError(onError);
-    }));
-    buttons.add(createButton('Delete registered User', () {
-      liveTests.deleteRegisteredUser('userId').then(onSuccess).catchError(onError);
-    }));
-    return buttons;
-  }
-
   void handleSessionResult(session) {
     if (session.error != null) {
       onError(session.error.toString());
@@ -96,35 +75,59 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Widget createButton(String name, Function callback) {
-    return RaisedButton(
-        onPressed: callback,
-        child: Text(name),
-        color: Colors.blue,
-        textColor: Colors.white);
+  List<Widget> getMainContent(context) {
+    List<Widget> buttons = [];
+    buttons.add(UiUtils.createButton('load', () {
+      liveTests.load().then(onSuccess).catchError(onError);
+    }));
+    buttons.add(UiUtils.createButton('Register User', () {
+      liveTests.registerUser('userId').then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(UiUtils.createButton('Authenticate', () {
+      liveTests.authenticate('userId').then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(UiUtils.createButton('Capture Live Face', () {
+      liveTests.captureLiveFace().then(handleSessionResult).catchError(onError);
+    }));
+    buttons.add(UiUtils.createButton('Compare Faces', () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) {
+          return CompareFaces();
+        })
+      );
+    }));
+    buttons.add(UiUtils.createButton('Get Registered Users', () {
+      liveTests.getRegisteredUsers().then(onSuccess).catchError(onError);
+    }));
+    buttons.add(UiUtils.createButton('Delete registered User', () {
+      liveTests.deleteRegisteredUser('userId').then(onSuccess).catchError(onError);
+    }));
+    List<Widget> content = [Center(child: Text('Load result: $_loadResult\n')),
+      Center(child: Text('Operation result: $_operationResult\n'))];
+    content.addAll(buttons);
+
+    return content;
   }
+
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> content = [
-      Center(child: Text('Load result: $_loadResult\n')),
-      Center(child: Text('Operation result: $_operationResult\n'))
-    ];
-    content.addAll(getButtonList().map((Widget button) {
-      return button;
-    }).toList());
-
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Ver-ID plugin example app'),
-        ),
-        body: Center(
-            //child: Text('Running on: $_platformVersion\n' ),
-            child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 50),
-          children: content,
-        )),
+      home: Builder(
+          builder: (context) =>
+              Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Ver-ID plugin example app'),
+                  ),
+                  body: Center(
+                    //child: Text('Running on: $_platformVersion\n' ),
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 50),
+                        children: getMainContent(context),
+                      )
+                  )
+              ),
       ),
     );
   }
