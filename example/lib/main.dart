@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veridflutterplugin_example/detectFaceInImageView.dart';
 import 'dart:async';
 import 'package:veridflutterplugin_example/liveTests.dart';
 import 'dart:developer' as developer;
@@ -80,6 +81,9 @@ class _MyAppState extends State<MyApp> {
     buttons.add(UiUtils.createButton('load', () {
       liveTests.load().then(onSuccess).catchError(onError);
     }));
+    buttons.add(UiUtils.createButton('unload', () {
+      liveTests.unload().then(onSuccess).catchError(onError);
+    }));
     buttons.add(UiUtils.createButton('Register User', () {
       liveTests.registerUser('userId').then(handleSessionResult).catchError(onError);
     }));
@@ -95,6 +99,14 @@ class _MyAppState extends State<MyApp> {
         MaterialPageRoute(builder: (context) {
           return CompareFaces();
         })
+      );
+    }));
+    buttons.add(UiUtils.createButton('Detect Face in Image', () {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return DetectFaceInImage();
+          })
       );
     }));
     buttons.add(UiUtils.createButton('Get Registered Users', () {

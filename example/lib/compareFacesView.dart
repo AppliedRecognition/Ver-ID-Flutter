@@ -33,14 +33,6 @@ class _CompareFacesState extends State<CompareFaces> {
     });
   }
 
-  void handleSessionResult(session) {
-    if (session.error != null) {
-      onError(session.error.toString());
-    } else {
-      onSuccess(session);
-    }
-  }
-
   void handleCaptureLiveFaceResult(sessionResult, faceToUpdate) {
     if (sessionResult.attachments.isNotEmpty) {
       Face face = sessionResult.attachments[0].recognizableFace;

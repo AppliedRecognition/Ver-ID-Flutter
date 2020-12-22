@@ -100,9 +100,23 @@ class LiveTests {
     }
   }
 
+  Future<Face> detectFaceInImage(String imageData) async {
+    if (verID != null) {
+      return VerID.detectFaceInImage(image: imageData);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+
   Future<VerID> load() {
-    // Platform messages may fail, so we use a try/catch PlatformException.
     return Veridflutterplugin.load().then((instance) =>
         verID = instance); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+  }
+
+  Future<String> unload() {
+    return Veridflutterplugin.unload().then((result) {
+      verID = null;
+      return "OK";
+    });
   }
 }
