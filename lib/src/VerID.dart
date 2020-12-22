@@ -115,14 +115,12 @@ class VerID {
   static Future<FaceComparisonResult> compareFaces(
       {@required Face face1, @required Face face2}) async {
     String txtResult;
-    List options = [
-      {"face1": face1, "face2": face2}
-    ];
+    Map<String, String> options = {"face1": jsonEncode(face1), "face2": jsonEncode(face2)};
     FaceComparisonResult objFaceCompResult;
     txtResult =
         await Veridflutterplugin.channel.invokeMethod('compareFaces', options);
     objFaceCompResult =
-        FaceComparisonResult.fromJson(decodeResult(pencoded: txtResult));
+        FaceComparisonResult.fromJson(jsonDecode(txtResult));
 
     return objFaceCompResult;
   }

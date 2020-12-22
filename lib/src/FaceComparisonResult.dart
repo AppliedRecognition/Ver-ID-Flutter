@@ -13,27 +13,31 @@ class FaceComparisonResult {
   /**
    * The result score
    */
-  int score = 0;
+  num score = 0;
 
   /**
    * Comparisons with scores higher than the threshold may be considered authenticated
    */
-  int authenticationThreshold = 0;
+  num authenticationThreshold = 0;
 
   /**
    * Maximum possilbe score
    */
-  int max = 0;
+  num max = 0;
+
+  String toString() {
+    return 'score: $score, authenticationThreshold: $authenticationThreshold, max: $max';
+  }
 
   FaceComparisonResult.fromJson(Map<String, dynamic> json) {
     if (json.containsKey("score")) {
-      score = int.parse(json["score"]);
+      score = json["score"];
     }
     if (json.containsKey("authenticationThreshold")) {
-      authenticationThreshold = int.parse(json["authenticationThreshold"]);
+      authenticationThreshold = json["authenticationThreshold"];
     }
     if (json.containsKey("max")) {
-      max = int.parse(json["max"]);
+      max = json["max"];
     }
   }
 }
