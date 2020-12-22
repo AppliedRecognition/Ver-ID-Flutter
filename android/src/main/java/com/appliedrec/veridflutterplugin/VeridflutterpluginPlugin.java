@@ -17,6 +17,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.util.Base64InputStream;
 import android.content.pm.PackageInfo;
@@ -93,6 +95,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     //TODO - test with unit tests
     //save reference to activity for use in load
     this.activeUIActivityRef = binding.getActivity();
+    binding.addActivityResultListener(this);
   }
 
   public void onDetachedFromActivityForConfigChanges() {
@@ -103,6 +106,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
     //TODO - test with unit tests
     this.activeUIActivityRef = binding.getActivity();
+    binding.addActivityResultListener(this);
   }
 
   public void onDetachedFromActivity() {
@@ -141,7 +145,9 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   // in the same class.
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "veridflutterplugin");
-    channel.setMethodCallHandler(new VeridflutterpluginPlugin());
+    VeridflutterpluginPlugin plugin = new VeridflutterpluginPlugin();
+    channel.setMethodCallHandler(plugin);
+    registrar.addActivityResultListener(plugin);
   }
 
   private JSONArray getLegacyArgs(MethodCall call) {
@@ -194,6 +200,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
   public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
     final Activity activity = this.activeUIActivityRef;
     final JSONArray args = getLegacyArgs(call);
+    mResult = result;
     if (call.method.equals("setTestingMode")) {
       if (call.argument("testingMode")) {
         try {
@@ -248,7 +255,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         }
       }
     } else if (call.method.equals("authenticate")) {
-      String jsonSettings = getArg(args, "x", String.class);
+      String jsonSettings = call.argument("settings");
       AuthenticationSessionSettings tempSettings  = null;
       if (TESTING_MODE) {
         result.success(ATTACHMENT_MOCK);
@@ -268,7 +275,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         }, REQUEST_CODE_AUTHENTICATE);
       }
     } else if(call.method.equals("captureLiveFace")) {
-      String jsonSettings = getArg(args, "settings", String.class);
+      String jsonSettings = call.argument("settings");
       LivenessDetectionSessionSettings tempSettings = null;
       if (TESTING_MODE) {
         result.success(ATTACHMENT_MOCK);
@@ -291,21 +298,35 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
       loadVerIDAndRun(args, result, new Runnable() {
         @Override
         public void run() {
-          try {
-            String[] users = verID.getUserManagement().getUsers();
-            Gson gson = new Gson();
-            String usersFound = "";
-            if (TESTING_MODE) {
-              usersFound = "[\"user1\", \"user2\", \"user3\"]";
-            } else {
-              usersFound = gson.toJson(users, String[].class);
-            }
-            final String jsonUsers = usersFound;
-            result.success(jsonUsers);
-          } catch (final Exception e) {
-            e.printStackTrace();
-            result.error("errorLoadingRegisteredUsers", e.getLocalizedMessage(), null);
-          }
+            new Thread(new Runnable() {
+              public void run() {
+                try {
+                  String[] users = verID.getUserManagement().getUsers();
+                  Gson gson = new Gson();
+                  String usersFound = "";
+                  if (TESTING_MODE) {
+                    usersFound = "[\"user1\", \"user2\", \"user3\"]";
+                  } else {
+                    usersFound = gson.toJson(users, String[].class);
+                  }
+                  final String jsonUsers = usersFound;
+                  getMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                      result.success(jsonUsers);
+                    }
+                  });
+                } catch (final Exception e) {
+                  e.printStackTrace();
+                  getMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                      result.error("errorLoadingRegisteredUsers", e.getLocalizedMessage(), null);
+                    }
+                  });
+                }
+              }
+            }).start();
         }
       });
     } else if (call.method.equals("deleteUser")) {
@@ -314,14 +335,30 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         loadVerIDAndRun(args, result, new Runnable() {
           @Override
           public void run() {
-            try {
-              verID.getUserManagement().deleteUsers(new String[]{userId});
-              result.success("");
-            } catch (final Exception e) {
-              e.printStackTrace();
-              result.error("deleteUserError", e.getLocalizedMessage(), null);
+              new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                  try {
+                    verID.getUserManagement().deleteUsers(new String[]{userId});
+                    getMainThread(new Runnable() {
+                      @Override
+                      public void run() {
+                        result.success("OK");
+                      }
+                    });
+                  } catch (final Exception e) {
+                    e.printStackTrace();
+                    getMainThread(new Runnable() {
+                      @Override
+                      public void run() {
+                        result.error("deleteUserError", e.getLocalizedMessage(), null);
+                      }
+                    });
+                  }
+                }
+              }).start();
             }
-          }
         });
       } else {
         result.error("deleteUserError", "User id must not be null", null);
@@ -506,6 +543,10 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
       }
       verIDFactory.createVerID();
     }
+  }
+
+  private void getMainThread(Runnable runnable) {
+    new Handler(Looper.getMainLooper()).post(runnable);
   }
 
   protected  <T> T getArg(JSONArray args, String key, Class<T> type) {

@@ -14,4 +14,15 @@ class VerIDSessionSettings {
    * Set to `true` to display the result of the session to the user
    */
   bool showResult = false;
+
+  /**
+   * to JSON mapper for string conversion
+   */
+  Map<String, dynamic> toJson() {
+    return {
+      'expiryTime': expiryTime,
+      'numberOfResultsToCollect': numberOfResultsToCollect,
+      'showResult': showResult
+    };
+  }
 }
