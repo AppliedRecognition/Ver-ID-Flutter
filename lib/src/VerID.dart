@@ -127,11 +127,8 @@ class VerID {
 
   static Future<Face> detectFaceInImage({@required String image}) async {
     String txtResult = "";
-    List options = [
-      {"image": image}
-    ];
     txtResult = await Veridflutterplugin.channel
-        .invokeMethod('detectFaceInImage', options);
+        .invokeMethod('detectFaceInImage',  {"image": image});
     Face objFaceResult = Face.fromJson(decodeResult(pencoded: txtResult));
 
     return objFaceResult;
