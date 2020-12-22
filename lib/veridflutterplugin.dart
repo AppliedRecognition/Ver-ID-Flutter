@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'src/VerID.dart';
 
@@ -44,18 +42,7 @@ class Veridflutterplugin {
     return resultObj;
   }
 
-  static Future<Map> unload() async {
-    //this only sets  a string as part of the platform implementation, nothing more expected
-    String result = "{}", tempResult;
-    Map<String, dynamic> resultJson = new Map<String, dynamic>();
-    try {
-      tempResult = await channel.invokeMethod('unload');
-      resultJson = jsonDecode(result);
-    } on PlatformException catch (ex) {
-      developer.log(ex.toString());
-      resultJson = jsonDecode(createJsonError(ex.message.toString()));
-    } finally {
-      return resultJson;
-    }
+  static Future<String> unload() async {
+    return await channel.invokeMethod('unload');
   }
 }
