@@ -30,7 +30,11 @@ class SessionResult {
       this.attachments = attachments;
     }
     if (json["error"] != null) {
-      this.error = VerIDError.fromJson(json["error"]);
+      try {
+        this.error = VerIDError.fromJson(json["error"]);
+      } catch (e) {
+        throw json["error"];
+      }
     }
   }
 }
