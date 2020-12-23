@@ -17,20 +17,16 @@ class VerID {
    */
   static Future<SessionResult> register(
       {@required RegistrationSessionSettings settings}) async {
-    try {
-      String encodedSettings = settings.toJson().toString();
-      return Veridflutterplugin.channel.invokeMethod(
-          'registerUser', {"settings": encodedSettings}).then((value) {
-        if (value == 'null') {
-          // session canceled
-          return null;
-        }
-        SessionResult result = SessionResult.fromJson(jsonDecode(value));
-        return result;
-      });
-    } catch (e) {
-      developer.log(e.toString());
+    String txtResult;
+    String encodedSettings = jsonEncode(settings.toJson());
+    txtResult = await Veridflutterplugin.channel
+        .invokeMethod('registerUser', {"settings": encodedSettings});
+    if (txtResult == 'null') {
+      // session canceled
+      return null;
     }
+    SessionResult result = SessionResult.fromJson(decodeResult(pencoded: txtResult));
+    return result;
   }
 
   /**
@@ -39,20 +35,16 @@ class VerID {
    */
   static Future<SessionResult> authenticate(
       {@required AuthenticationSessionSettings settings}) async {
-    try {
-      String encodedSettings = settings.toJson().toString();
-      return Veridflutterplugin.channel.invokeMethod(
-          'authenticate', {"settings": encodedSettings}).then((value) {
-        if (value == 'null') {
-          // session canceled
-          return null;
-        }
-        SessionResult result = SessionResult.fromJson(jsonDecode(value));
-        return result;
-      });
-    } catch (e) {
-      developer.log(e.toString());
+    String txtResult;
+    String encodedSettings = jsonEncode(settings.toJson());
+    txtResult = await Veridflutterplugin.channel
+        .invokeMethod('authenticate', {"settings": encodedSettings});
+    if (txtResult == 'null') {
+      // session canceled
+      return null;
     }
+    SessionResult result = SessionResult.fromJson(decodeResult(pencoded: txtResult));
+    return result;
   }
 
   /**
@@ -61,37 +53,26 @@ class VerID {
    */
   static Future<SessionResult> captureLiveFace(
       {@required LivenessDetectionSessionSettings settings}) async {
-    try {
-      String encodedSettings = settings.toJson().toString();
-      return Veridflutterplugin.channel.invokeMethod(
-          'captureLiveFace', {"settings": encodedSettings}).then((value) {
-        if (value == 'null') {
-          // session canceled
-          return null;
-        }
-        SessionResult result = SessionResult.fromJson(jsonDecode(value));
-        return result;
-      });
-    } catch (e) {
-      developer.log(e.toString());
+    String txtResult;
+    String encodedSettings = jsonEncode(settings.toJson());
+    txtResult = await Veridflutterplugin.channel.invokeMethod(
+        'captureLiveFace', {"settings": encodedSettings});
+    if (txtResult == 'null') {
+      // session canceled
+      return null;
     }
+    SessionResult result = SessionResult.fromJson(decodeResult(pencoded: txtResult));
+    return result;
   }
 
   /**
    * Get an array of users with registered faces
    */
   static Future<List<String>> getRegisteredUsers() async {
-    try {
-      return Veridflutterplugin.channel
-          .invokeMethod('getRegisteredUsers')
-          .then((value) {
-        developer.log(value.toString());
-        List<dynamic> decoded = jsonDecode(value);
-        return decoded.map((e) => e.toString()).toList();
-      });
-    } catch (e) {
-      developer.log(e.toString());
-    }
+    String txtResult = await Veridflutterplugin.channel
+        .invokeMethod('getRegisteredUsers');
+    List<dynamic> decoded = jsonDecode(txtResult);
+    return decoded.map((e) => e.toString()).toList();
   }
 
   /**
@@ -99,12 +80,8 @@ class VerID {
    * @param userId ID of the user to delete
    */
   static Future<String> deleteRegisteredUser(String userId) async {
-    try {
-      return Veridflutterplugin.channel
-          .invokeMethod('deleteUser', {'userId': userId});
-    } catch (e) {
-      developer.log(e.toString());
-    }
+    return await Veridflutterplugin.channel
+        .invokeMethod('deleteUser', {'userId': userId});
   }
 
   /**
@@ -120,7 +97,7 @@ class VerID {
     txtResult =
         await Veridflutterplugin.channel.invokeMethod('compareFaces', options);
     objFaceCompResult =
-        FaceComparisonResult.fromJson(jsonDecode(txtResult));
+        FaceComparisonResult.fromJson(decodeResult(pencoded: txtResult));
 
     return objFaceCompResult;
   }
