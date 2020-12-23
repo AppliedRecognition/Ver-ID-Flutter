@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-
 import 'VerIDSessionSettings.dart';
 import 'Bearing.dart';
 
@@ -123,7 +120,7 @@ class RegistrationSessionSettings extends VerIDSessionSettings {
     json.addAll({
       'userId': userId,
       'bearingsToRegister':
-          jsonEncode(bearingsToRegister.map((e) => e.toString()).toList()),
+        bearingsToRegister.map((e) => e.toString()).toList(),
     });
     return json;
   }
