@@ -11,6 +11,7 @@ The Ver-ID plugin has been tested to work with Flutter against the following com
 | Flutter Version   | iOS       | Android   |
 |-----------------  |-------    |---------  |
 | 1.20.4 (stable)   | 13+       | SDK 17+   |
+| 1.24.0-10.1.pre   | 13+       | SDK 17+   |
 
 
 Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite in the example of the plugin to make sure the mobile OS platform combination you are using works before proceeding.
@@ -57,7 +58,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
         ~~~
 
 
-1. If your app includes iOS platform, please be patient as we are working on finalizing iOS support at this point in time.
+1. If your app includes the iOS platform, please be patient as we are working on finalizing iOS support at this point in time.
 4. If your app includes the Android platform:
     - Ensure your app targets Android API level 21 or newer. Open your Cordova project's **config.xml** file and add the following entry:
         
