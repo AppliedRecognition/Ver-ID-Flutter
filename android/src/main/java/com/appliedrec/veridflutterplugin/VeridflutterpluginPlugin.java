@@ -150,6 +150,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     registrar.addActivityResultListener(plugin);
   }
 
+  /*
   private JSONArray getLegacyArgs(MethodCall call) {
     String password = call.arguments == null ? null : (String) call.argument("password");
     String settings = call.arguments == null ? null : (String) call.argument("settings");
@@ -195,11 +196,13 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     }
     return  args;
   }
+  *
+   */
 
   @Override
   public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
     final Activity activity = this.activeUIActivityRef;
-    final JSONArray args = getLegacyArgs(call);
+    final JSONArray args = (JSONArray) call.arguments;
     mResult = result;
     if (call.method.equals("setTestingMode")) {
       if (call.argument("testingMode")) {
@@ -221,7 +224,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         loadVerIDAndRun(args, result, new Runnable() {
           @Override
           public void run() {
-            result.success("{ msg: \"OK\" }");
+            result.success("{}");
           }
         });
       } catch (Exception ex) {
@@ -229,7 +232,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
       }
     } else if(call.method.equals("unload")) {
       verID = null;
-      result.success("");
+      result.success("OK");
     } else if(call.method.equals("registerUser")) {
       RegistrationSessionSettings tempSettings = null;
       String jsonSettings = call.argument("settings");
