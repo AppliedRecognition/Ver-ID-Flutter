@@ -1,6 +1,5 @@
 import 'VerIDSessionSettings.dart';
 import 'Bearing.dart';
-import 'dart:convert';
 
 /**
  * Settings for liveness detection sessions
@@ -28,7 +27,7 @@ class LivenessDetectionSessionSettings extends VerIDSessionSettings {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = super.toJson();
     json.addAll({
-      'bearings': jsonEncode(bearings.map((e) => e.toString()).toList()),
+      'bearings': bearings.map((e) => e.toString()).toList(),
     });
     return json;
   }
