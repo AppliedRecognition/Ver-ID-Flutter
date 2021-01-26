@@ -27,6 +27,7 @@ import android.content.pm.PackageManager;
 import com.appliedrec.verid.core.AuthenticationSessionSettings;
 import com.appliedrec.verid.core.Face;
 import com.appliedrec.verid.core.FaceDetectionRecognitionFactory;
+import com.appliedrec.verid.core.IFaceRecognition;
 import com.appliedrec.verid.core.LivenessDetectionSessionSettings;
 import com.appliedrec.verid.core.RecognizableFace;
 import com.appliedrec.verid.core.RegistrationSessionSettings;
@@ -150,6 +151,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     registrar.addActivityResultListener(plugin);
   }
 
+  /*
   private JSONArray getLegacyArgs(MethodCall call) {
     String password = call.arguments == null ? null : (String) call.argument("password");
     String settings = call.arguments == null ? null : (String) call.argument("settings");
@@ -195,11 +197,26 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     }
     return  args;
   }
+  *
+   */
 
   @Override
   public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
     final Activity activity = this.activeUIActivityRef;
-    final JSONArray args = getLegacyArgs(call);
+    //Log.d(VeridflutterpluginPlugin.class.getSimpleName(), call.arguments.toString());
+    JSONArray tempArgs = null;
+    try {
+      if (call.arguments != null) {
+        tempArgs = new JSONArray(call.arguments.toString());
+      }
+    } catch (JSONException ex) {
+      Log.d(VeridflutterpluginPlugin.class.getSimpleName(), call.arguments.toString());
+    } finally {
+      if (tempArgs == null) {
+        tempArgs = new JSONArray();
+      }
+    }
+    final JSONArray args = tempArgs;
     mResult = result;
     if (call.method.equals("setTestingMode")) {
       if (call.argument("testingMode")) {
@@ -221,7 +238,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         loadVerIDAndRun(args, result, new Runnable() {
           @Override
           public void run() {
-            result.success("{ msg: \"OK\" }");
+            result.success("{}");
           }
         });
       } catch (Exception ex) {
@@ -229,7 +246,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
       }
     } else if(call.method.equals("unload")) {
       verID = null;
-      result.success("");
+      result.success("OK");
     } else if(call.method.equals("registerUser")) {
       RegistrationSessionSettings tempSettings = null;
       String jsonSettings = call.argument("settings");
@@ -364,8 +381,9 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         result.error("deleteUserError", "User id must not be null", null);
       }
     } else if (call.method.equals("compareFaces")) {
-      final String t1 = getArg(args, "face1", String.class);
-      final String t2 = getArg(args, "face2", String.class);
+      Log.d(VeridflutterpluginPlugin.class.getSimpleName(), args.toString());
+      final String t1 = (String) call.argument("face1");//getArg(args, "face1", String.class);
+      final String t2 = (String) call.argument("face2");//getArg(args, "face2", String.class);
       loadVerIDAndRun(args, result, new Runnable() {
         @Override
         public void run() {
@@ -373,7 +391,8 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
             Gson gson = new Gson();
             RecognizableFace face1 = gson.fromJson(t1, RecognizableFace.class);
             RecognizableFace face2 = gson.fromJson(t2, RecognizableFace.class);
-            final float score = verID.getFaceRecognition().compareSubjectFacesToFaces(new RecognizableFace[]{face1}, new RecognizableFace[]{face2});
+            IFaceRecognition oFaceRecog = verID.getFaceRecognition();
+            final float score = oFaceRecog.compareSubjectFacesToFaces(new RecognizableFace[]{face1}, new RecognizableFace[]{face2});
             final JsonObject response = new JsonObject();
             response.addProperty("score", score);
             response.addProperty("authenticationThreshold", verID.getFaceRecognition().getAuthenticationThreshold());
@@ -551,8 +570,10 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
 
   protected  <T> T getArg(JSONArray args, String key, Class<T> type) {
     for (int i=0; args != null && i<args.length(); i++) {
+
       JSONObject arg = null;
       try {
+        Log.d(TAG, "getArg data point: " + args.getString(i));
         arg = args.getJSONObject(i);
       } catch (JSONException e) {
         e.printStackTrace();
