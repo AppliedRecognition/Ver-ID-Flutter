@@ -111,12 +111,11 @@ The Ver-ID Person plugin module will be available in your script from the import
     }
   }
   
-  Future<SessionResult> registerUser(String userId) async {
+  Future<SessionResult> authenticate(String userId) async {
     if (verID != null) {
-      RegistrationSessionSettings settings =
-          new RegistrationSessionSettings(userId: userId);
-      settings.showResult = true;
-      return VerID.register(settings: settings).then((value) {
+      AuthenticationSessionSettings settings =
+          new AuthenticationSessionSettings(userId: userId);
+      return VerID.authenticate(settings: settings).then((value) {
         if (value == null) {
           throw 'Session canceled';
         }
