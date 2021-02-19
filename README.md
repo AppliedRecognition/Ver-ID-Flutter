@@ -137,11 +137,11 @@ Liveness detection sessions follow the same format as registration and authentic
 ## Extracting faces for face comparison
 
 ~~~dart
-Future<SessionResult> captureLiveFace() async {
+
     if (verID != null) {
       LivenessDetectionSessionSettings settings =
           new LivenessDetectionSessionSettings();
-      return VerID.captureLiveFace(settings: settings).then((value) {
+      VerID.captureLiveFace(settings: settings).then((value) {
         if (value == null) {
           throw 'Session canceled';
         }
@@ -154,12 +154,16 @@ Future<SessionResult> captureLiveFace() async {
 ~~~
 
 ## Face detection session without asking for poses
-
+Similar to the above, with a couple of configuration options
 ~~~dart
-Future<SessionResult> captureLiveFace() async {
+Future<SessionResult> captureLiveFaceWithoutPoses() async {
     if (verID != null) {
       LivenessDetectionSessionSettings settings =
           new LivenessDetectionSessionSettings();
+	  // We only want to collect one result
+	  settings.numberOfResultsToCollect = 1;
+    	  // Ask the user to assume only one bearing (straight)
+    	  settings.bearings = [Bearing.STRAIGHT];
       return VerID.captureLiveFace(settings: settings).then((value) {
         if (value == null) {
           throw 'Session canceled';
