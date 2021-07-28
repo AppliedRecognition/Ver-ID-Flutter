@@ -90,19 +90,121 @@ The load operation may take up to a few of seconds. Load Ver-ID using the `load`
     }
 ~~~
 
+## Register and Authenticate User From Flutter
+The Ver-ID Person plugin module will be available in your script from the import class VerID.  The rest of the support classes can be imported from the main package via the route package:veridflutterplugin/src/ :
+
+~~~dart
+  //method for user registration
+  Future<SessionResult> registerUser(String userId) async {
+    if (verID != null) {
+      RegistrationSessionSettings settings =
+          new RegistrationSessionSettings(userId: userId);
+      settings.showResult = true;
+      return VerID.register(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+  
+  Future<SessionResult> authenticate(String userId) async {
+    if (verID != null) {
+      AuthenticationSessionSettings settings =
+          new AuthenticationSessionSettings(userId: userId);
+      return VerID.authenticate(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+~~~
 
 
-### Face detection session without asking for poses
+### Liveness Detection
 
-### Liveness detection session defining the bearings (poses) the user may be asked to assume
+In a liveness detection session the user is asked to assume a series of random poses in front of the camera.
+
+Liveness detection sessions follow the same format as registration and authentication.
+
+## Extracting faces for face comparison
+
+~~~dart
+
+    if (verID != null) {
+      LivenessDetectionSessionSettings settings =
+          new LivenessDetectionSessionSettings();
+      VerID.captureLiveFace(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+~~~
+
+## Face detection session without asking for poses
+Similar to the above, with a couple of configuration options
+~~~dart
+Future<SessionResult> captureLiveFaceWithoutPoses() async {
+    if (verID != null) {
+      LivenessDetectionSessionSettings settings =
+          new LivenessDetectionSessionSettings();
+	  // We only want to collect one result
+	  settings.numberOfResultsToCollect = 1;
+    	  // Ask the user to assume only one bearing (straight)
+    	  settings.bearings = [Bearing.STRAIGHT];
+      return VerID.captureLiveFace(settings: settings).then((value) {
+        if (value == null) {
+          throw 'Session canceled';
+        }
+        return value;
+      });
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+~~~
 
 ## Session Response Format
+The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html) that represents the result of the session.
 
 ## Comparing Faces
 
+~~~dart
+Future<FaceComparisonResult> compareFaces(Face face1, Face face2) async {
+    if (verID != null) {
+      return VerID.compareFaces(face1: face1, face2: face2);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+~~~
+
 ## Detecting Faces In Images
 
+~~~dart
+Future<Face> detectFaceInImage(String imageData) async {
+    if (verID != null) {
+      return VerID.detectFaceInImage(image: imageData);
+    } else {
+      throw verIdNotInitialized;
+    }
+  }
+~~~
+
 ## Project Samples
+Project samples can be found on the samples branch of this repository, to be used as a reference for development purposes.
 
 ## Module API Reference
-
+- [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html)
