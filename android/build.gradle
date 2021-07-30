@@ -35,5 +35,5 @@ android {
 }
 
 dependencies {
-    implementation "com.appliedrec.verid:ui:1.21.2"
+    implementation "com.appliedrec.verid:ui2:2.1.0"
 }
