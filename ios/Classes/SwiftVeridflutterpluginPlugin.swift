@@ -5,56 +5,61 @@ import VerIDUI
 
 @objc (SwiftVeridflutterpluginPlugin) public class SwiftVeridflutterpluginPlugin: NSObject, FlutterPlugin, VerIDFactoryDelegate, VerIDSessionDelegate {
     
-  //to remove error for cannot be constructed because it has no accessible initializers
+    //we do not use the callback ID, we use the result/call on each invocation, lets fix this
+    private var result: FlutterResult?
+    private var call: FlutterMethodCall?
+
+    //import from original CP
+    private var verid: VerID?
+    private var TESTING_MODE: Bool = false
+
+    public func didFinishSession(_ session: VerIDSession, withResult result: VerIDSessionResult) {
+        self.sendResult("OK")
+    }
+
+
+    //to remove error for cannot be constructed because it has no accessible initializers
     public override init() {
         //no initialization code for now
     }
-    
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "veridflutterplugin", binaryMessenger: registrar.messenger())
-    let instance = SwiftVeridflutterpluginPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    //self.sendResult("iOS " + UIDevice.current.systemVersion)
-    //when the call comes in, we store the incoming result call for later use
-    self.result = result
-    self.call = call
-    if (call.method == "load") {
-        self.load()
-    } else if (call.method == "unload") {
-        self.unload()
-    } else if (call.method == "registerUser") {
-        self.registerUser(call)
-    } else if (call.method == "captureLiveFace") {
-        self.captureLiveFace(call)
-    } else if (call.method == "authenticate") {
-        self.authenticate(call)
-    } else if (call.method == "getRegisteredUsers") {
-        self.getRegisteredUsers(call)
-    } else if (call.method == "compareFaces") {
-        self.compareFaces(call)
-    } else if (call.method == "deleteUser") {
-        self.deleteUser(call)
-    } else if (call.method == "detectFaceInImage") {
-        self.detectFaceInImage(call)
-    } else if (call.method == "setTestingMode") {
-        self.setTestingMode()
-    } else {
-        self.sendResult(FlutterError.init(code: "INVALID_CALL",
-                                           message: "The call method is invalid, method: \(call.method)",
-                                           details: nil))
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "veridflutterplugin", binaryMessenger: registrar.messenger())
+        let instance = SwiftVeridflutterpluginPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
     }
-  }
-  //we do not use the callback ID, we use the result/call on each invocation, lets fix this
-    private var result: FlutterResult?
-    private var call: FlutterMethodCall?
-    
-  //import from original CP
 
-    private var verid: VerID?
-    private var TESTING_MODE: Bool = false
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        //self.sendResult("iOS " + UIDevice.current.systemVersion)
+        //when the call comes in, we store the incoming result call for later use
+        self.result = result
+        self.call = call
+        if (call.method == "load") {
+            self.load()
+        } else if (call.method == "unload") {
+            self.unload()
+        } else if (call.method == "registerUser") {
+            self.registerUser(call)
+        } else if (call.method == "captureLiveFace") {
+            self.captureLiveFace(call)
+        } else if (call.method == "authenticate") {
+            self.authenticate(call)
+        } else if (call.method == "getRegisteredUsers") {
+            self.getRegisteredUsers(call)
+        } else if (call.method == "compareFaces") {
+            self.compareFaces(call)
+        } else if (call.method == "deleteUser") {
+            self.deleteUser(call)
+        } else if (call.method == "detectFaceInImage") {
+            self.detectFaceInImage(call)
+        } else if (call.method == "setTestingMode") {
+            self.setTestingMode()
+        } else {
+            self.sendResult(FlutterError.init(code: "INVALID_CALL",
+                                              message: "The call method is invalid, method: \(call.method)",
+                                              details: nil))
+        }
+    }
 
     @objc public func load() {
         self.loadVerID() { _ in
@@ -77,8 +82,8 @@ import VerIDUI
                 self.startSession(settings: settings)
             } catch {
                 self.sendResult(FlutterError.init(code: "REGISTER_USER_ERROR",
-                                         message: error.localizedDescription,
-                                         details: nil))
+                                                  message: error.localizedDescription,
+                                                  details: nil))
             }
         }
     }
@@ -91,9 +96,9 @@ import VerIDUI
                 let settings: AuthenticationSessionSettings = try self.createSettings([call.arguments as Any])
                 self.startSession(settings: settings)
             } catch {
-                self.sendResult(FlutterError.init( code: "AUTHENTICATION_ERROR",
-                                                message: error.localizedDescription,
-                                                details: nil))
+                self.sendResult(FlutterError.init(code: "AUTHENTICATION_ERROR",
+                                                  message: error.localizedDescription,
+                                                  details: nil))
             }
         }
     }
@@ -106,9 +111,9 @@ import VerIDUI
                 let settings: LivenessDetectionSessionSettings = try self.createSettings([call.arguments as Any])
                 self.startSession(settings: settings)
             } catch {
-                self.sendResult(FlutterError.init( code: "CAPTURE_LIVE_FACE_ERROR",
-                                                message: error.localizedDescription,
-                                                details: nil))
+                self.sendResult(FlutterError.init(code: "CAPTURE_LIVE_FACE_ERROR",
+                                                  message: error.localizedDescription,
+                                                  details: nil))
             }
         }
     }
@@ -127,76 +132,76 @@ import VerIDUI
                 }
             } catch {
                 err = error.localizedDescription
-                
+
             }
-            self.sendResult(FlutterError.init( code: "GET_REGISTERED_USERS_ERROR",
-                                            message: err,
-                                            details: nil))
+            self.sendResult(FlutterError.init(code: "GET_REGISTERED_USERS_ERROR",
+                                              message: err,
+                                              details: nil))
         }
     }
 
     @objc public func deleteUser(_ call: FlutterMethodCall) {
         //the below used optional chaining on ?.compactMap
-        if let userId = [call.arguments].compactMap({ ($0 as? [String:String])?["userId"] }).first {
+        if let userId = [call.arguments].compactMap({ ($0 as? [String: String])?["userId"] }).first {
             self.loadVerID() { verid in
                 verid.userManagement.deleteUsers([userId]) { error in
                     if let err = error {
-                        self.sendResult(FlutterError.init( code: "DELETE_USER_ERROR",
-                                                        message: err.localizedDescription,
-                                                        details: nil))
+                        self.sendResult(FlutterError.init(code: "DELETE_USER_ERROR",
+                                                          message: err.localizedDescription,
+                                                          details: nil))
                         return
                     }
                     self.sendResult("OK")
                 }
             }
         } else {
-            self.sendResult(FlutterError.init( code: "DELETE_USER_ERROR",
-                                            message: "Unable to parse userId argument",
-                                            details: nil))
+            self.sendResult(FlutterError.init(code: "DELETE_USER_ERROR",
+                                              message: "Unable to parse userId argument",
+                                              details: nil))
         }
     }
 
     @objc public func compareFaces(_ call: FlutterMethodCall) {
-        if let t1 = [call.arguments].compactMap({ ($0 as? [String:String])?["face1"] }).first?.data(using: .utf8), let t2 = [call.arguments].compactMap({ ($0 as? [String:String])?["face2"] }).first?.data(using: .utf8) {
+        if let t1 = [call.arguments].compactMap({ ($0 as? [String: String])?["face1"] }).first?.data(using: .utf8), let t2 = [call.arguments].compactMap({ ($0 as? [String: String])?["face2"] }).first?.data(using: .utf8) {
             self.loadVerID() { verid in
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         if let template1 = try JSONDecoder().decode(CodableFace.self, from: t1).recognizable,
-                        let template2 = try JSONDecoder().decode(CodableFace.self, from: t2).recognizable {
+                            let template2 = try JSONDecoder().decode(CodableFace.self, from: t2).recognizable {
                             let score = try verid.faceRecognition.compareSubjectFaces([template1], toFaces: [template2]).floatValue
                             DispatchQueue.main.async {
-                                let message: [String:Any] = ["score":score,"authenticationThreshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
+                                let message: [String: Any] = ["score": score, "authenticationThreshold": verid.faceRecognition.authenticationScoreThreshold.floatValue, "max": verid.faceRecognition.maxAuthenticationScore.floatValue];
                                 do {
                                     let jsonData = try JSONSerialization.data(withJSONObject: message, options: [])
-                                    self.sendResult( String(data: jsonData,
-                                                            encoding: .ascii))
+                                    self.sendResult(String(data: jsonData,
+                                                           encoding: .ascii))
                                 } catch {
-                                    self.sendResult(FlutterError.init( code: "ERROR_PARSING_RESULT",
-                                                                    message: error.localizedDescription,
-                                                                    details: nil))
+                                    self.sendResult(FlutterError.init(code: "ERROR_PARSING_RESULT",
+                                                                      message: error.localizedDescription,
+                                                                      details: nil))
                                 }
                             }
                         } else {
                             DispatchQueue.main.async {
-                                self.sendResult(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
-                                                                message: "Unable to parse template1 and/or template2 arguments",
-                                                                details: nil))
+                                self.sendResult(FlutterError.init(code: "TEMPLATE_PARSE_ERROR",
+                                                                  message: "Unable to parse template1 and/or template2 arguments",
+                                                                  details: nil))
                             }
                         }
                     } catch {
                         DispatchQueue.main.async {
-                            self.sendResult(FlutterError.init( code: "TEMPLATE_PARSE_ERROR",
-                                                            message: error.localizedDescription,
-                                                            details: nil))
+                            self.sendResult(FlutterError.init(code: "TEMPLATE_PARSE_ERROR",
+                                                              message: error.localizedDescription,
+                                                              details: nil))
                         }
                     }
                 }
             }
         } else {
             DispatchQueue.main.async {
-                self.sendResult(FlutterError.init( code: "TEMPLATE_ARGUMENT_PARSE_ERROR",
-                                                message: "Unable to parse template1 and/or template2 arguments",
-                                                details: nil))
+                self.sendResult(FlutterError.init(code: "TEMPLATE_ARGUMENT_PARSE_ERROR",
+                                                  message: "Unable to parse template1 and/or template2 arguments",
+                                                  details: nil))
             }
         }
     }
@@ -206,7 +211,7 @@ import VerIDUI
             DispatchQueue.global(qos: .userInitiated).async {
                 do {
                     // the below was previously commands.arguments
-                    guard let imageString = [call.arguments].compactMap({ ($0 as? [String:String])?["image"] }).first else {
+                    guard let imageString = [call.arguments].compactMap({ ($0 as? [String: String])?["image"] }).first else {
                         throw VerIDPluginError.invalidArgument
                     }
                     guard imageString.starts(with: "data:image/"), let mimeTypeEndIndex = imageString.firstIndex(of: ";"), let commaIndex = imageString.firstIndex(of: ",") else {
@@ -257,9 +262,9 @@ import VerIDUI
                     }
                 } catch {
                     DispatchQueue.main.async {
-                        self.sendResult(FlutterError.init( code: "DETECT_FACE_IN_IMAGE_ERROR",
-                                                        message: error.localizedDescription,
-                                                        details: nil))
+                        self.sendResult(FlutterError.init(code: "DETECT_FACE_IN_IMAGE_ERROR",
+                                                          message: error.localizedDescription,
+                                                          details: nil))
                     }
                 }
             }
@@ -284,15 +289,15 @@ import VerIDUI
                 err = error.localizedDescription
             }
             DispatchQueue.main.async {
-                self.sendResult(FlutterError.init( code: "SESSION_ERROR",
-                                                message: err,
-                                                details: nil))
+                self.sendResult(FlutterError.init(code: "SESSION_ERROR",
+                                                  message: err,
+                                                  details: nil))
             }
         }
     }
 
 
-    
+
     public func sessionWasCanceled(_ session: VerIDSession) {
         self.sendResult("null");
     }
@@ -301,7 +306,7 @@ import VerIDUI
     // MARK: - Session helpers
 
     private func createSettings<T: VerIDSessionSettings>(_ args: [Any]?) throws -> T {
-        guard let string = args?.compactMap({ ($0 as? [String:String])?["settings"] }).first, let data = string.data(using: .utf8) else {
+        guard let string = args?.compactMap({ ($0 as? [String: String])?["settings"] }).first, let data = string.data(using: .utf8) else {
             NSLog("Unable to parse settings")
             throw VerIDPluginError.parsingError
         }
@@ -325,9 +330,9 @@ import VerIDUI
 
     private func startSession<T: VerIDSessionSettings>(settings: T) {
         guard self.result != nil else {
-            self.sendResult(FlutterError.init( code: "SESSION_START_ERROR",
-                                 message: "Session start error",
-                                 details: nil))
+            self.sendResult(FlutterError.init(code: "SESSION_START_ERROR",
+                                              message: "Session start error",
+                                              details: nil))
             return
         }
         self.loadVerID() { verid in
@@ -343,8 +348,8 @@ import VerIDUI
             return
         }
         let veridFactory: VerIDFactory
-        
-        if let password = [self.call!.arguments].compactMap({ ($0 as? [String:String])?["password"] }).first {
+
+        if let password = [self.call!.arguments].compactMap({ ($0 as? [String: String])?["password"] }).first {
             veridFactory = VerIDFactory(veridPassword: password)
         } else {
             veridFactory = VerIDFactory()
@@ -370,9 +375,9 @@ import VerIDUI
             self.TESTING_MODE = mode
             self.sendResult("OK")
         } else {
-            self.sendResult(FlutterError.init( code: "SET_TESTING_MODE_ERROR",
-                                 message: "Not or Invalid Argutments provided",
-                                 details: nil))
+            self.sendResult(FlutterError.init(code: "SET_TESTING_MODE_ERROR",
+                                              message: "Not or Invalid Argutments provided",
+                                              details: nil))
         }
     }
 
@@ -387,28 +392,28 @@ import VerIDUI
     //Functions to get Mockup data
 
     private func getAttachmentMockup() -> String {
-        let faceMockup : String = self.getFaceMockup()
+        let faceMockup: String = self.getFaceMockup()
         var mockup = "{\"attachments\": [";
         mockup += "{\"recognizableFace\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
         mockup += "]}";
-        
+
         return mockup
     }
 
     private func getFaceMockup() -> String {
-        var faceMockup : String = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743,";
+        var faceMockup: String = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743,";
         faceMockup += "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932,";
         faceMockup += "\"leftEye\":[101,322.5],\"rightEye\":[213,321],";
         faceMockup += "\"data\":\"TESTING_DATA\",";
         faceMockup += "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
-        
+
         return faceMockup;
     }
     //End Methods For Testing
-  
-  //end import from original CP
 
-  
+    //end import from original CP
+
+
 }
 
 public enum VerIDPluginError: Int, Error {
@@ -416,34 +421,35 @@ public enum VerIDPluginError: Int, Error {
 }
 
 class CodableSessionResult: Codable {
-    
+
     enum CodingKeys: String, CodingKey {
         case attachments, error
     }
-    
+
     enum AttachmentCodingKeys: String, CodingKey {
         case recognizableFace, bearing, image
     }
-    
+
     let original: VerIDSessionResult
-    
+
     init(_ result: VerIDSessionResult) {
         self.original = result
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let error = try container.decodeIfPresent(String.self, forKey: .error) {
             self.original = VerIDSessionResult(error: NSError(domain: kVerIDErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: error]))
         } else {
-            var attachments: [DetectedFace] = []
+            var attachments: [FaceCapture] = []
             var attachmentsContainer = try container.nestedUnkeyedContainer(forKey: .attachments)
             while !attachmentsContainer.isAtEnd {
                 let attachmentContainer = try attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
                 let codableFace = try attachmentContainer.decode(CodableFace.self, forKey: .recognizableFace)
                 let bearing = try attachmentContainer.decode(Bearing.self, forKey: .bearing)
-                let imageURL: URL?
+                let image: UIImage?
                 if let imageString = try attachmentContainer.decodeIfPresent(String.self, forKey: .image) {
+                    let imageURL: URL?
                     let pattern = "^data:(.+?);base64,(.+)$"
                     let regex = try NSRegularExpression(pattern: pattern, options: [])
                     let all = NSMakeRange(0, imageString.utf16.count)
@@ -456,24 +462,26 @@ class CodableSessionResult: Codable {
                     }
                     imageURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("jpg")
                     try imageData.write(to: imageURL!)
+                    image = UIImage(data: imageData)
                 } else {
-                    imageURL = nil
+                    image = nil
                 }
-                let attachment = DetectedFace(face: codableFace.recognizableFace ?? codableFace.face, bearing: bearing, imageURL: imageURL)
+                let attachment = FaceCapture(face: codableFace.recognizableFace ?? codableFace.face as! RecognizableFace, bearing: bearing, image: image!)
                 attachments.append(attachment)
             }
-            self.original = VerIDSessionResult(attachments: attachments)
+            self.original = VerIDSessionResult(faceCaptures: attachments)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
-        try self.original.attachments.forEach({
+        try self.original.faceCaptures.forEach({
             var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
             try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as? Recognizable), forKey: .recognizableFace)
             try attachmentContainer.encode($0.bearing, forKey: .bearing)
-            if let imageURL = $0.imageURL, let data = try? Data(contentsOf: imageURL), let image = UIImage(data: data), let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
+            let image = $0.image
+            if let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
                 try attachmentContainer.encode(String(format: "data:image/jpeg;base64,%@", jpeg), forKey: .image)
             }
         })
@@ -484,30 +492,30 @@ class CodableSessionResult: Codable {
 }
 
 class CodableFace: NSObject, Codable {
-    
+
     enum CodingKeys: String, CodingKey {
         case data, faceTemplate, height, leftEye, pitch, quality, rightEye, roll, width, x, y, yaw
     }
-    
+
     enum FaceTemplateCodingKeys: String, CodingKey {
         case data, version
     }
-    
+
     let face: Face
     let recognizable: Recognizable?
-    
+
     lazy var recognizableFace: RecognizableFace? = {
         guard let recognizable = self.recognizable else {
             return nil
         }
         return RecognizableFace(face: self.face, recognitionData: recognizable.recognitionData, version: recognizable.version)
     }()
-    
+
     init(face: Face, recognizable: Recognizable?) {
         self.face = face
         self.recognizable = recognizable
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.face = Face()
@@ -525,7 +533,7 @@ class CodableFace: NSObject, Codable {
             self.recognizable = nil
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.face.data, forKey: .data)
