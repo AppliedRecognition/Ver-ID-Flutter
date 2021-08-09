@@ -8,10 +8,11 @@ Ver-ID gives your users the ability to authenticate using their face.
 
 The Ver-ID plugin has been tested to work with Flutter against the following compatibility matrix for iOS and Android.  Please note that the SDK versions of the corresponding OSes are for compilation purposes (target iOS version on iOS and compile SDK version on Android):
 
-| Flutter Version   | iOS       | Android   |
-|-----------------  |-------    |---------  |
-| 1.20.4 (stable)   | 13+       | SDK 17+   |
-| 1.24.0-10.1.pre   | 13+       | SDK 17+   |
+| Flutter Version | iOS | Android   |
+|-----------------|-----|---------  |
+| 1.20.4 (stable) | 13+ | SDK 17+   |
+| 1.24.0-10.1.pre | 13+ | SDK 17+   |
+| 2.2.3 (stable)  | 13+ | SDK 17+   |
 
 
 Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite in the example of the plugin to make sure the mobile OS platform combination you are using works before proceeding.
@@ -19,7 +20,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 ## Adding Ver-ID Person Plugin to Your Flutter App
 
 1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-1. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.  
+2. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.  
 
 
 	1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
@@ -58,9 +59,8 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
         ~~~
 
 
-1. If your app includes the iOS platform, please be patient as we are working on finalizing iOS support at this point in time.
-4. If your app includes the Android platform:
-    - Ensure your app targets Android API level 21 or newer. Open your Cordova project's **config.xml** file and add the following entry:
+3. If your app includes the Android platform:
+    - Ensure your app targets Android API level 21 or newer.
         
         ~~~xml
         <widget>
