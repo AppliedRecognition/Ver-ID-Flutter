@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:3.5.4'
     }
 }
 
@@ -24,10 +24,17 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
-        minSdkVersion 17
+        multiDexEnabled true
+        minSdkVersion 21
     }
     lintOptions {
         disable 'InvalidPackage'
@@ -35,5 +42,6 @@ android {
 }
 
 dependencies {
-    implementation "com.appliedrec.verid:ui:1.21.2"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    implementation 'com.appliedrec.verid:ui2:2.2.0'
 }
