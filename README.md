@@ -4,14 +4,15 @@
 
 Ver-ID gives your users the ability to authenticate using their face.
 
-## Compatibility 
+## Compatibility
 
 The Ver-ID plugin has been tested to work with Flutter against the following compatibility matrix for iOS and Android.  Please note that the SDK versions of the corresponding OSes are for compilation purposes (target iOS version on iOS and compile SDK version on Android):
 
-| Flutter Version   | iOS       | Android   |
-|-----------------  |-------    |---------  |
-| 1.20.4 (stable)   | 13+       | SDK 17+   |
-| 1.24.0-10.1.pre   | 13+       | SDK 17+   |
+| Flutter Version | iOS | Android   |
+|-----------------|-----|---------  |
+| 1.20.4 (stable) | 13+ | SDK 17+   |
+| 1.24.0-10.1.pre | 13+ | SDK 17+   |
+| 2.2.3 (stable)  | 13+ | SDK 17+   |
 
 
 Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite in the example of the plugin to make sure the mobile OS platform combination you are using works before proceeding.
@@ -19,7 +20,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 ## Adding Ver-ID Person Plugin to Your Flutter App
 
 1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-1. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.  
+2. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.
 
 
 	1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
@@ -58,18 +59,17 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
         ~~~
 
 
-1. If your app includes the iOS platform, please be patient as we are working on finalizing iOS support at this point in time.
-4. If your app includes the Android platform:
-    - Ensure your app targets Android API level 21 or newer. Open your Cordova project's **config.xml** file and add the following entry:
-        
-        ~~~xml
-        <widget>
-            <platform name="android">
-                <preference name="android-minSdkVersion" value="21" />
-            </platform>
-        </widget>
-        ~~~    
-   
+3. If your app includes the Android platform:
+   - Ensure your app targets Android API level 21 or newer.
+
+       ~~~xml
+       <widget>
+           <platform name="android">
+               <preference name="android-minSdkVersion" value="21" />
+           </platform>
+       </widget>
+       ~~~    
+
 ## Loading Ver-ID
 
 Ver-ID must be loaded before you can run face detection sessions or compare faces.
@@ -78,16 +78,16 @@ The load operation may take up to a few of seconds. Load Ver-ID using the `load`
 
 ~~~dart
     VerID result;
-    // Platform messages may fail, so we use a try/catch with the PlatformException
-    try {
-      //platformVersion = await Veridflutterplugin.platformVersion;
-      result = await Veridflutterplugin
-          .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
-      pluginProcessResult = "VerID instance loaded successfully.";
-    } on PlatformException catch (ex) {
-      pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
-      developer.log(ex.message.toString());
-    }
+// Platform messages may fail, so we use a try/catch with the PlatformException
+try {
+//platformVersion = await Veridflutterplugin.platformVersion;
+result = await Veridflutterplugin
+        .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+pluginProcessResult = "VerID instance loaded successfully.";
+} on PlatformException catch (ex) {
+pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
+developer.log(ex.message.toString());
+}
 ~~~
 
 ## Register and Authenticate User From Flutter
@@ -95,36 +95,36 @@ The Ver-ID Person plugin module will be available in your script from the import
 
 ~~~dart
   //method for user registration
-  Future<SessionResult> registerUser(String userId) async {
-    if (verID != null) {
+Future<SessionResult> registerUser(String userId) async {
+   if (verID != null) {
       RegistrationSessionSettings settings =
-          new RegistrationSessionSettings(userId: userId);
+      new RegistrationSessionSettings(userId: userId);
       settings.showResult = true;
       return VerID.register(settings: settings).then((value) {
-        if (value == null) {
-          throw 'Session canceled';
-        }
-        return value;
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
       });
-    } else {
+   } else {
       throw verIdNotInitialized;
-    }
-  }
-  
-  Future<SessionResult> authenticate(String userId) async {
-    if (verID != null) {
+   }
+}
+
+Future<SessionResult> authenticate(String userId) async {
+   if (verID != null) {
       AuthenticationSessionSettings settings =
-          new AuthenticationSessionSettings(userId: userId);
+      new AuthenticationSessionSettings(userId: userId);
       return VerID.authenticate(settings: settings).then((value) {
-        if (value == null) {
-          throw 'Session canceled';
-        }
-        return value;
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
       });
-    } else {
+   } else {
       throw verIdNotInitialized;
-    }
-  }
+   }
+}
 ~~~
 
 
@@ -138,42 +138,42 @@ Liveness detection sessions follow the same format as registration and authentic
 
 ~~~dart
 
-    if (verID != null) {
-      LivenessDetectionSessionSettings settings =
-          new LivenessDetectionSessionSettings();
-      VerID.captureLiveFace(settings: settings).then((value) {
-        if (value == null) {
-          throw 'Session canceled';
-        }
-        return value;
-      });
-    } else {
-      throw verIdNotInitialized;
-    }
-  }
+if (verID != null) {
+LivenessDetectionSessionSettings settings =
+new LivenessDetectionSessionSettings();
+VerID.captureLiveFace(settings: settings).then((value) {
+if (value == null) {
+throw 'Session canceled';
+}
+return value;
+});
+} else {
+throw verIdNotInitialized;
+}
+}
 ~~~
 
 ## Face detection session without asking for poses
 Similar to the above, with a couple of configuration options
 ~~~dart
 Future<SessionResult> captureLiveFaceWithoutPoses() async {
-    if (verID != null) {
+   if (verID != null) {
       LivenessDetectionSessionSettings settings =
-          new LivenessDetectionSessionSettings();
-	  // We only want to collect one result
-	  settings.numberOfResultsToCollect = 1;
-    	  // Ask the user to assume only one bearing (straight)
-    	  settings.bearings = [Bearing.STRAIGHT];
+      new LivenessDetectionSessionSettings();
+      // We only want to collect one result
+      settings.numberOfResultsToCollect = 1;
+      // Ask the user to assume only one bearing (straight)
+      settings.bearings = [Bearing.STRAIGHT];
       return VerID.captureLiveFace(settings: settings).then((value) {
-        if (value == null) {
-          throw 'Session canceled';
-        }
-        return value;
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
       });
-    } else {
+   } else {
       throw verIdNotInitialized;
-    }
-  }
+   }
+}
 ~~~
 
 ## Session Response Format
@@ -183,24 +183,24 @@ The callback of a successful session will contain [an object](https://appliedrec
 
 ~~~dart
 Future<FaceComparisonResult> compareFaces(Face face1, Face face2) async {
-    if (verID != null) {
+   if (verID != null) {
       return VerID.compareFaces(face1: face1, face2: face2);
-    } else {
+   } else {
       throw verIdNotInitialized;
-    }
-  }
+   }
+}
 ~~~
 
 ## Detecting Faces In Images
 
 ~~~dart
 Future<Face> detectFaceInImage(String imageData) async {
-    if (verID != null) {
+   if (verID != null) {
       return VerID.detectFaceInImage(image: imageData);
-    } else {
+   } else {
       throw verIdNotInitialized;
-    }
-  }
+   }
+}
 ~~~
 
 ## Project Samples
