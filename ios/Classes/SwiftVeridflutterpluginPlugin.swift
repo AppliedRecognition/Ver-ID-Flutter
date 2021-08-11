@@ -4,19 +4,14 @@ import VerIDCore
 import VerIDUI
 
 @objc (SwiftVeridflutterpluginPlugin) public class SwiftVeridflutterpluginPlugin: NSObject, FlutterPlugin, VerIDFactoryDelegate, VerIDSessionDelegate {
-    
+
     //we do not use the callback ID, we use the result/call on each invocation, lets fix this
-    private var result: FlutterResult?
+    private var flutterResult: FlutterResult?
     private var call: FlutterMethodCall?
 
     //import from original CP
     private var verid: VerID?
     private var TESTING_MODE: Bool = false
-
-    public func didFinishSession(_ session: VerIDSession, withResult result: VerIDSessionResult) {
-        self.sendResult("OK")
-    }
-
 
     //to remove error for cannot be constructed because it has no accessible initializers
     public override init() {
@@ -32,7 +27,7 @@ import VerIDUI
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         //self.sendResult("iOS " + UIDevice.current.systemVersion)
         //when the call comes in, we store the incoming result call for later use
-        self.result = result
+        self.flutterResult = result
         self.call = call
         if (call.method == "load") {
             self.load()
@@ -273,7 +268,7 @@ import VerIDUI
 
     // MARK: - VerID Session Delegate
 
-    public func session(_ session: VerIDSession, didFinishWithResult result: VerIDSessionResult) {
+    private func finishSession(_ session: VerIDSession, _ result: VerIDSessionResult) {
         DispatchQueue.global(qos: .userInitiated).async {
             var err = "Unknown error"
             do {
@@ -296,7 +291,13 @@ import VerIDUI
         }
     }
 
+    public func session(_ session: VerIDSession, didFinishWithResult result: VerIDSessionResult) {
+        finishSession(session, result)
+    }
 
+    public func didFinishSession(_ session: VerIDSession, withResult result: VerIDSessionResult) {
+        finishSession(session, result)
+    }
 
     public func sessionWasCanceled(_ session: VerIDSession) {
         self.sendResult("null");
@@ -329,7 +330,7 @@ import VerIDUI
     }
 
     private func startSession<T: VerIDSessionSettings>(settings: T) {
-        guard self.result != nil else {
+        guard self.flutterResult != nil else {
             self.sendResult(FlutterError.init(code: "SESSION_START_ERROR",
                                               message: "Session start error",
                                               details: nil))
@@ -382,8 +383,8 @@ import VerIDUI
     }
 
     @objc private func sendResult(_ resultMessage: Any) {
-        if let resultSender = self.result {
-            self.result = nil
+        if let resultSender = self.flutterResult {
+            self.flutterResult = nil
             resultSender(resultMessage)
         } else {
             NSLog("Error sending result, FlutterResult is null")
@@ -478,7 +479,7 @@ class CodableSessionResult: Codable {
         var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
         try self.original.faceCaptures.forEach({
             var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
-            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as? Recognizable), forKey: .recognizableFace)
+            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as Recognizable), forKey: .recognizableFace)
             try attachmentContainer.encode($0.bearing, forKey: .bearing)
             let image = $0.image
             if let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
