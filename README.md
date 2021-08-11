@@ -12,7 +12,7 @@ The Ver-ID plugin has been tested to work with Flutter against the following com
 |-----------------|-----|---------  |
 | 1.20.4 (stable) | 13+ | SDK 17+   |
 | 1.24.0-10.1.pre | 13+ | SDK 17+   |
-| 2.2.3 (stable)  | 13+ | SDK 17+   |
+| 2.2.3 (stable)  | 10.3+ | SDK 21+ |
 
 
 Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite in the example of the plugin to make sure the mobile OS platform combination you are using works before proceeding.
