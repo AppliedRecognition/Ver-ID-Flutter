@@ -32,7 +32,6 @@ import com.google.gson.JsonObject;
 
 import java.io.ByteArrayInputStream;
 
-import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -48,46 +47,40 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
 
     private static final String CHANNEL = "veridflutterplugin";
+    private static boolean TESTING_MODE = false;
     public static String TAG = VeridflutterpluginPlugin.class.getSimpleName();
 
     private Result mResult = null;
-
-    //################### Base CODE
-    protected static boolean TESTING_MODE = false;
-
-    protected VerID verID;
-    //######### START LIFECYCLE METHODS
-    private Activity activeUIActivityRef = null;
-
-    //########## used to get base app name
-    private String baseImportPackageName;
+    private Activity activity = null;
+    private VerID verID;
+    private String packageName;
 
     public void onAttachedToActivity(ActivityPluginBinding binding) {
         //TODO - test with unit tests
         //save reference to activity for use in load
-        this.activeUIActivityRef = binding.getActivity();
+        this.activity = binding.getActivity();
     }
 
     public void onDetachedFromActivityForConfigChanges() {
         //TODO - test with unit tests
-        this.activeUIActivityRef = null;
+        this.activity = null;
     }
 
     public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
         //TODO - test with unit tests
-        this.activeUIActivityRef = binding.getActivity();
+        this.activity = binding.getActivity();
     }
 
     public void onDetachedFromActivity() {
         //TODO - test with unit tests
-        this.activeUIActivityRef = null;
+        this.activity = null;
     }
 
-    //######### END LIFECYCLE METHODS
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
+    // END LIFECYCLE METHODS
+    //! The MethodChannel that will the communication between Flutter and native Android
+    //
+    //! This local reference serves to register the plugin with the Flutter Engine and unregister it
+    //! when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
 
     @Override
@@ -98,7 +91,13 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     }
 
     private void onAttachedToEngine(Context applicationContext) {
-        this.baseImportPackageName = applicationContext.getPackageName();
+        this.packageName = applicationContext.getPackageName();
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+        channel = null;
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -119,6 +118,15 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     @Override
     public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
         mResult = result;
+        String FACE_MOCK = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743," +
+                "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932," +
+                "\"leftEye\":[101,322.5],\"rightEye\":[213,321]," +
+                "\"data\":\"TESTING_DATA\"," +
+                "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
+        String ATTACHMENT_MOCK = "{\"attachments\": [" +
+                "{\"recognizableFace\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
+                "]}";
+
         switch (call.method) {
             case "setTestingMode":
                 if (call.argument("testingMode")) {
@@ -164,7 +172,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
                             result.error("cannotParseRegistrationSession", "Cannot parge registration session.", null);
                         }
                         final RegistrationSessionSettings settings = tempSettings;
-                        loadVerIDAndStartActivity(call, result, settings);
+                        loadVerIDAndStartSession(call, result, settings);
                     } catch (Exception ex) {
                         Log.d(TAG, ex.getMessage());
                     }
@@ -184,7 +192,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
                         result.error("authenticationCannotParseSettings", "Unable to parse session settings", null);
                     }
                     final AuthenticationSessionSettings settings = tempSettings;
-                    loadVerIDAndStartActivity(call, result, settings);
+                    loadVerIDAndStartSession(call, result, settings);
                 }
                 break;
             }
@@ -201,7 +209,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
                         result.error("captureLiveFaceError", "Unable to parse session settings", null);
                     }
                     final LivenessDetectionSessionSettings settings = tempSettings;
-                    loadVerIDAndStartActivity(call, result, settings);
+                    loadVerIDAndStartSession(call, result, settings);
                 }
                 break;
             }
@@ -359,20 +367,13 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         }
     }
 
-    @Override
-    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-        channel.setMethodCallHandler(null);
-        channel = null;
-    }
+    // BASE CODE FOR MODS
 
-
-    //####################BASE CODE FOR MODS
-
-    protected void loadVerIDAndStartActivity(@NonNull final MethodCall call, final Result result, final VerIDSessionSettings settings) {
+    protected void loadVerIDAndStartSession(@NonNull final MethodCall call, final Result result, final VerIDSessionSettings settings) {
         loadVerIDAndRun(call, result, new Runnable() {
             @Override
             public void run() {
-                Activity activity = VeridflutterpluginPlugin.this.activeUIActivityRef;
+                Activity activity = VeridflutterpluginPlugin.this.activity;
                 if (activity == null) {
                     result.error("loadVerIdAndStartActivityError", "Activity is null", null);
                     return;
@@ -390,13 +391,13 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
     }
 
     protected void loadVerIDAndRun(@NonNull final MethodCall call, final Result result, final Runnable runnable) {
-        final Activity activity = this.activeUIActivityRef;
+        final Activity activity = this.activity;
         if (activity == null) {
-            result.error("activityIsNull in " + baseImportPackageName, "flutter activity is null", null);
+            result.error("activityIsNull in " + packageName, "flutter activity is null", null);
             return;
         }
         if (activity.isDestroyed()) {
-            result.error("activityIsNull in " + baseImportPackageName, "flutter activity is destroyed", null);
+            result.error("activityIsNull in " + packageName, "flutter activity is destroyed", null);
             return;
         }
         if (verID != null) {
@@ -412,7 +413,7 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
 
                 @Override
                 public void onVerIDCreationFailed(VerIDFactory factory, Exception error) {
-                    result.error("verIdFactoryException in " + baseImportPackageName, "Ver-ID Factory Exception: " + error.getLocalizedMessage(), null);
+                    result.error("verIdFactoryException in " + packageName, "Ver-ID Factory Exception: " + error.getLocalizedMessage(), null);
                 }
             });
             if (password != null) {
@@ -426,29 +427,19 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
         new Handler(Looper.getMainLooper()).post(runnable);
     }
 
-    private final String FACE_MOCK = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743," +
-            "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932," +
-            "\"leftEye\":[101,322.5],\"rightEye\":[213,321]," +
-            "\"data\":\"TESTING_DATA\"," +
-            "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
-    private final String ATTACHMENT_MOCK = "{\"attachments\": [" +
-            "{\"recognizableFace\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
-            "]}";
-
-    //###############################
+    // Session Delegate
 
     class SessionDelegate implements VerIDSessionDelegate {
 
         @Override
         public void onSessionFinished(IVerIDSession<?> session, final VerIDSessionResult result) {
-            Log.e(TAG, "onSessionFinished");
             if (!result.getError().isPresent() && mResult != null) {
-                Gson gson = new Gson();
-                final String response = gson.toJson(result, VerIDSessionResult.class);
-                final Activity activity = activeUIActivityRef;
                 getMainThread(new Runnable() {
                     @Override
                     public void run() {
+                        Gson gson = new Gson();
+                        final String response = gson.toJson(result, VerIDSessionResult.class);
+                        final Activity activity = VeridflutterpluginPlugin.this.activity;
                         if (activity == null) {
                             mResult.error("Flutter activity is null", null, null);
                             return;
@@ -461,7 +452,15 @@ public class VeridflutterpluginPlugin implements FlutterPlugin, MethodCallHandle
                         mResult = null;
                     }
                 });
-
+            } else {
+                if (mResult != null) {
+                    getMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mResult.error("onSessionFinished", "Session canceled", result.getError().toString());
+                        }
+                    });
+                }
             }
         }
     }
