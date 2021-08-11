@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'DetectedFace.dart';
+import 'FaceCapture.dart';
 import 'VerIDError.dart';
 
 /**
@@ -9,7 +9,8 @@ class SessionResult {
   /**
    * Faces and images detected during a session
    */
-  List<DetectedFace> attachments = [];
+  List<FaceCapture> attachments = [];
+
   /**
    * Error (if any) that caused the session to fail
    */
@@ -22,12 +23,14 @@ class SessionResult {
     if (json == null) {
       return;
     }
-    if (json["attachments"] != null) {
-      List<dynamic> dynamicList = json["attachments"];
-      List<DetectedFace> attachments = dynamicList
-          .map((detectedFace) => DetectedFace.fromJson(detectedFace))
+    if (json["faceCaptures"] != null) {
+      List<dynamic> dynamicList = json["faceCaptures"];
+
+      List<FaceCapture> aux = dynamicList
+          .map((detectedFace) => FaceCapture.fromJson(detectedFace))
           .toList();
-      this.attachments = attachments;
+
+      this.attachments = aux.toList();
     }
     if (json["error"] != null) {
       try {
