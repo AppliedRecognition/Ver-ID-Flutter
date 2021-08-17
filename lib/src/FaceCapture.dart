@@ -35,6 +35,6 @@ class FaceCapture {
     this.recognizableFace = Face.fromJson(json["face"]);
     this.bearing = Bearing.fromString(json["bearing"]);
     this.image = json["image"];
-    this.diagnosticInfo = DiagnosticInfo.fromJson(json['diagnosticInfo']);
+    this.diagnosticInfo = json['diagnosticInfo'] != null ? DiagnosticInfo.fromJson(json['diagnosticInfo']) : null;
   }
 }

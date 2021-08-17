@@ -394,8 +394,8 @@ import VerIDUI
 
     private func getAttachmentMockup() -> String {
         let faceMockup: String = self.getFaceMockup()
-        var mockup = "{\"attachments\": [";
-        mockup += "{\"recognizableFace\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
+        var mockup = "{\"faceCaptures\": [";
+        mockup += "{\"face\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
         mockup += "]}";
 
         return mockup
@@ -424,11 +424,11 @@ public enum VerIDPluginError: Int, Error {
 class CodableSessionResult: Codable {
 
     enum CodingKeys: String, CodingKey {
-        case attachments, error
+        case faceCaptures, error
     }
 
     enum AttachmentCodingKeys: String, CodingKey {
-        case recognizableFace, bearing, image
+        case face, bearing, image
     }
 
     let original: VerIDSessionResult
@@ -443,10 +443,10 @@ class CodableSessionResult: Codable {
             self.original = VerIDSessionResult(error: NSError(domain: kVerIDErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: error]))
         } else {
             var attachments: [FaceCapture] = []
-            var attachmentsContainer = try container.nestedUnkeyedContainer(forKey: .attachments)
+            var attachmentsContainer = try container.nestedUnkeyedContainer(forKey: .faceCaptures)
             while !attachmentsContainer.isAtEnd {
                 let attachmentContainer = try attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
-                let codableFace = try attachmentContainer.decode(CodableFace.self, forKey: .recognizableFace)
+                let codableFace = try attachmentContainer.decode(CodableFace.self, forKey: .face)
                 let bearing = try attachmentContainer.decode(Bearing.self, forKey: .bearing)
                 let image: UIImage?
                 if let imageString = try attachmentContainer.decodeIfPresent(String.self, forKey: .image) {
@@ -476,10 +476,10 @@ class CodableSessionResult: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
+        var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .faceCaptures)
         try self.original.faceCaptures.forEach({
             var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
-            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as Recognizable), forKey: .recognizableFace)
+            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as Recognizable), forKey: .face)
             try attachmentContainer.encode($0.bearing, forKey: .bearing)
             let image = $0.image
             if let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
