@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 0.42.0">
+  <meta name="description" content="veridflutterplugin API docs, for the Dart programming language.">
+  <title>veridflutterplugin - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+  
+</head>
+
+
+<body data-base-href=""
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/AppliedRecognition/Ver-ID-Flutter">veridflutterplugin package</a></li>
+  </ol>
+  <div class="self-name">veridflutterplugin</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="https://github.com/AppliedRecognition/Ver-ID-Flutter">veridflutterplugin package</a></li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">veridflutterplugin</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="AuthenticationSessionSettings/AuthenticationSessionSettings-library.html">AuthenticationSessionSettings</a></li>
+      <li><a href="Bearing/Bearing-library.html">Bearing</a></li>
+      <li><a href="DiagnosticInfo/DiagnosticInfo-library.html">DiagnosticInfo</a></li>
+      <li><a href="Face/Face-library.html">Face</a></li>
+      <li><a href="FaceCapture/FaceCapture-library.html">FaceCapture</a></li>
+      <li><a href="FaceComparisonResult/FaceComparisonResult-library.html">FaceComparisonResult</a></li>
+      <li><a href="FaceTemplate/FaceTemplate-library.html">FaceTemplate</a></li>
+      <li><a href="LivenessDetectionSessionSettings/LivenessDetectionSessionSettings-library.html">LivenessDetectionSessionSettings</a></li>
+      <li><a href="RegistrationSessionSettings/RegistrationSessionSettings-library.html">RegistrationSessionSettings</a></li>
+      <li><a href="SessionResult/SessionResult-library.html">SessionResult</a></li>
+      <li><a href="VerID/VerID-library.html">VerID</a></li>
+      <li><a href="VerIDError/VerIDError-library.html">VerIDError</a></li>
+      <li><a href="veridflutterplugin/veridflutterplugin-library.html">veridflutterplugin</a></li>
+      <li><a href="VerIDSessionSettings/VerIDSessionSettings-library.html">VerIDSessionSettings</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="ver-id-person-plugin-for-flutter">Ver-ID Person Plugin for Flutter</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Ver-ID gives your users the ability to authenticate using their face.</p>
+<h2 id="compatibility">Compatibility</h2>
+<p>The Ver-ID plugin has been tested to work with Flutter against the following compatibility matrix for iOS and Android.  Please note that the SDK versions of the corresponding OSes are for compilation purposes (target iOS version on iOS and compile SDK version on Android):</p>
+<table><thead><tr><th>Flutter Version</th><th>iOS</th><th>Android</th></tr></thead><tbody><tr><td>1.20.4 (stable)</td><td>10.3+</td><td>SDK 21+</td></tr><tr><td>1.24.0-10.1.pre</td><td>10.3+</td><td>SDK 21+</td></tr><tr><td>2.2.3 (stable)</td><td>10.3+</td><td>SDK 21+</td></tr></tbody></table>
+<p>Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite in the example of the plugin to make sure the mobile OS platform combination you are using works before proceeding.</p>
+<h2 id="adding-ver-id-person-plugin-to-your-flutter-app">Adding Ver-ID Person Plugin to Your Flutter App</h2>
+<ol>
+<li>
+<p><a href="https://dev.ver-id.com/admin/register">Request a License File and password</a> for your app.</p>
+</li>
+<li>
+<p>To install the plugin choose from one of the following four options:</p>
+<ol>
+<li>
+<p>If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):</p>
+<pre class="language-bash"><code class="language-bash"> git clone https://github.com/AppliedRecognition/Ver-ID-Flutter.git .
+</code></pre>
+<p>In your pubspec file under dependencies, add:</p>
+<pre class="language-bash"><code class="language-bash"> dependencies:
+     veridflutterplugin: 'relative/path/to/plugin/directory'
+</code></pre>
+</li>
+<li>
+<p>Specify the path using your project's pubspec.yaml:</p>
+<pre class="language-bash"><code class="language-bash"> dependencies:
+     veridflutterplugin: '&gt;=0.1.0'
+</code></pre>
+</li>
+<li>
+<p>Specify the repository (master branch):</p>
+<pre class="language-bash"><code class="language-bash"> dependencies:
+     veridflutterplugin:
+         git:
+             url: 'https://github.com/AppliedRecognition/Ver-ID-Flutter.git'
+</code></pre>
+</li>
+<li>
+<p>Specify the repository (custom branch or reference tag):</p>
+<pre class="language-bash"><code class="language-bash"> dependencies:
+     veridflutterplugin:
+         git:
+             url: 'https://github.com/AppliedRecognition/Ver-ID-Flutter.git'
+             ref: 'my_custom_branch or tag'
+</code></pre>
+</li>
+</ol>
+</li>
+</ol>
+<ol start="3">
+<li>
+<p>If your app includes the Android platform, ensure your app targets Android API level 21 or newer.</p>
+<pre class="language-dart"><code>~~~xml
+&lt;widget&gt;
+    &lt;platform name="android"&gt;
+        &lt;preference name="android-minSdkVersion" value="21" /&gt;
+    &lt;/platform&gt;
+&lt;/widget&gt;
+~~~    
+</code></pre>
+</li>
+</ol>
+<h2 id="loading-ver-id">Loading Ver-ID</h2>
+<p>Ver-ID must be loaded before you can run face detection sessions or compare faces.</p>
+<p>The load operation may take up to a few of seconds. Load Ver-ID using the <code>load</code> call:</p>
+<pre class="language-dart"><code class="language-dart">    VerID result;
+// Platform messages may fail, so we use a try/catch with the PlatformException
+try {
+    //platformVersion = await Veridflutterplugin.platformVersion;
+    result = await Veridflutterplugin
+            .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+    pluginProcessResult = "VerID instance loaded successfully.";
+} on PlatformException catch (ex) {
+    pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
+    developer.log(ex.message.toString());
+}
+</code></pre>
+<h2 id="register-and-authenticate-user-from-flutter">Register and Authenticate User From Flutter</h2>
+<p>The Ver-ID Person plugin module will be available in your script from the import class VerID.  The rest of the support classes can be imported from the main package via the route package:veridflutterplugin/src/ :</p>
+<pre class="language-dart"><code class="language-dart">  //method for user registration
+Future&lt;SessionResult&gt; registerUser(String userId) async {
+   if (verID != null) {
+      RegistrationSessionSettings settings =
+      new RegistrationSessionSettings(userId: userId);
+      settings.showResult = true;
+      return VerID.register(settings: settings).then((value) {
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
+      });
+   } else {
+      throw verIdNotInitialized;
+   }
+}
+
+Future&lt;SessionResult&gt; authenticate(String userId) async {
+   if (verID != null) {
+      AuthenticationSessionSettings settings =
+      new AuthenticationSessionSettings(userId: userId);
+      return VerID.authenticate(settings: settings).then((value) {
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
+      });
+   } else {
+      throw verIdNotInitialized;
+   }
+}
+</code></pre>
+<h3 id="liveness-detection">Liveness Detection</h3>
+<p>In a liveness detection session the user is asked to assume a series of random poses in front of the camera.</p>
+<p>Liveness detection sessions follow the same format as registration and authentication.</p>
+<h2 id="extracting-faces-for-face-comparison">Extracting faces for face comparison</h2>
+<pre class="language-dart"><code class="language-dart">
+if (verID != null) {
+    LivenessDetectionSessionSettings settings = new LivenessDetectionSessionSettings();
+    VerID.captureLiveFace(settings: settings).then((value) {
+        if (value == null) {
+            throw 'Session canceled';
+        }
+        return value;
+    });
+} else {
+    throw verIdNotInitialized;
+}
+</code></pre>
+<h2 id="face-detection-session-without-asking-for-poses">Face detection session without asking for poses</h2>
+<p>Similar to the above, with a couple of configuration options</p>
+<pre class="language-dart"><code class="language-dart">Future&lt;SessionResult&gt; captureLiveFaceWithoutPoses() async {
+   if (verID != null) {
+      LivenessDetectionSessionSettings settings =
+      new LivenessDetectionSessionSettings();
+      // We only want to collect one result
+      settings.numberOfResultsToCollect = 1;
+      // Ask the user to assume only one bearing (straight)
+      settings.bearings = [Bearing.STRAIGHT];
+      return VerID.captureLiveFace(settings: settings).then((value) {
+         if (value == null) {
+            throw 'Session canceled';
+         }
+         return value;
+      });
+   } else {
+      throw verIdNotInitialized;
+   }
+}
+</code></pre>
+<h2 id="session-response-format">Session Response Format</h2>
+<p>The callback of a successful session will contain <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html">an object</a> that represents the result of the session.</p>
+<h2 id="comparing-faces">Comparing Faces</h2>
+<pre class="language-dart"><code class="language-dart">Future&lt;FaceComparisonResult&gt; compareFaces(Face face1, Face face2) async {
+   if (verID != null) {
+      return VerID.compareFaces(face1: face1, face2: face2);
+   } else {
+      throw verIdNotInitialized;
+   }
+}
+</code></pre>
+<h2 id="detecting-faces-in-images">Detecting Faces In Images</h2>
+<pre class="language-dart"><code class="language-dart">Future&lt;Face&gt; detectFaceInImage(String imageData) async {
+   if (verID != null) {
+      return VerID.detectFaceInImage(image: imageData);
+   } else {
+      throw verIdNotInitialized;
+   }
+}
+</code></pre>
+<h2 id="project-samples">Project Samples</h2>
+<p>Project samples can be found on the samples branch of this repository, to be used as a reference for development purposes.</p>
+<h2 id="module-api-reference">Module API Reference</h2>
+<ul>
+<li><a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html">Ver-ID</a></li>
+</ul>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="AuthenticationSessionSettings">
+  <span class="name"><a href="AuthenticationSessionSettings/AuthenticationSessionSettings-library.html">AuthenticationSessionSettings</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="Bearing">
+  <span class="name"><a href="Bearing/Bearing-library.html">Bearing</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="DiagnosticInfo">
+  <span class="name"><a href="DiagnosticInfo/DiagnosticInfo-library.html">DiagnosticInfo</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="Face">
+  <span class="name"><a href="Face/Face-library.html">Face</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="FaceCapture">
+  <span class="name"><a href="FaceCapture/FaceCapture-library.html">FaceCapture</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="FaceComparisonResult">
+  <span class="name"><a href="FaceComparisonResult/FaceComparisonResult-library.html">FaceComparisonResult</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="FaceTemplate">
+  <span class="name"><a href="FaceTemplate/FaceTemplate-library.html">FaceTemplate</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="LivenessDetectionSessionSettings">
+  <span class="name"><a href="LivenessDetectionSessionSettings/LivenessDetectionSessionSettings-library.html">LivenessDetectionSessionSettings</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="RegistrationSessionSettings">
+  <span class="name"><a href="RegistrationSessionSettings/RegistrationSessionSettings-library.html">RegistrationSessionSettings</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="SessionResult">
+  <span class="name"><a href="SessionResult/SessionResult-library.html">SessionResult</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="VerID">
+  <span class="name"><a href="VerID/VerID-library.html">VerID</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="VerIDError">
+  <span class="name"><a href="VerIDError/VerIDError-library.html">VerIDError</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="veridflutterplugin">
+  <span class="name"><a href="veridflutterplugin/veridflutterplugin-library.html">veridflutterplugin</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+          <dt id="VerIDSessionSettings">
+  <span class="name"><a href="VerIDSessionSettings/VerIDSessionSettings-library.html">VerIDSessionSettings</a></span> 
+
+</dt>
+<dd> 
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    veridflutterplugin
+      0.1.0
+  </span>
+
+  
+</footer>
+
+
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+
+</body>
+
+</html>
+

@@ -8,10 +8,10 @@ Ver-ID gives your users the ability to authenticate using their face.
 
 The Ver-ID plugin has been tested to work with Flutter against the following compatibility matrix for iOS and Android.  Please note that the SDK versions of the corresponding OSes are for compilation purposes (target iOS version on iOS and compile SDK version on Android):
 
-| Flutter Version | iOS | Android   |
-|-----------------|-----|---------  |
-| 1.20.4 (stable) | 13+ | SDK 17+   |
-| 1.24.0-10.1.pre | 13+ | SDK 17+   |
+| Flutter Version | iOS   | Android |
+|-----------------|-------|---------|
+| 1.20.4 (stable) | 10.3+ | SDK 21+ |
+| 1.24.0-10.1.pre | 10.3+ | SDK 21+ |
 | 2.2.3 (stable)  | 10.3+ | SDK 21+ |
 
 
@@ -20,47 +20,49 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 ## Adding Ver-ID Person Plugin to Your Flutter App
 
 1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-2. Clone the plugin Git repo into your file system, specify the git repository, or install using the Pub.dev package.
-
+2. To install the plugin choose from one of the following four options:
 
 	1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
 
-		~~~bash
-		git clone https://github.com/AppliedRecognition/Ver-ID-Flutter.git on your filesystem
+        ~~~bash
+        git clone https://github.com/AppliedRecognition/Ver-ID-Flutter.git .
+        ~~~
+        
+        In your pubspec file under dependencies, add:
 
-		on your pubspec file under dependencies, add:
-
-		dependencies:
-		  verid_flutter_plugin: 'relative/path/to/plugin/directory'
-		~~~
+        ~~~bash
+        dependencies:
+            veridflutterplugin: 'relative/path/to/plugin/directory'
+        ~~~
 
 	1. Specify the path using your project's pubspec.yaml:
 
 		~~~bash
-		dependencies:
-          veridflutterplugin: '>=0.1.0'
+        dependencies:
+            veridflutterplugin: '>=0.1.0'
 		~~~
 
     1. Specify the repository (master branch):
+    
         ~~~bash
         dependencies:
-            verid_flutter_plugin:
+            veridflutterplugin:
                 git:
                     url: 'https://github.com/AppliedRecognition/Ver-ID-Flutter.git'
         ~~~
 
     1. Specify the repository (custom branch or reference tag):
+    
         ~~~bash
         dependencies:
-            verid_flutter_plugin:
+            veridflutterplugin:
                 git:
                     url: 'https://github.com/AppliedRecognition/Ver-ID-Flutter.git'
                     ref: 'my_custom_branch or tag'
         ~~~
 
 
-3. If your app includes the Android platform:
-   - Ensure your app targets Android API level 21 or newer.
+3. If your app includes the Android platform, ensure your app targets Android API level 21 or newer.
 
        ~~~xml
        <widget>
@@ -80,13 +82,13 @@ The load operation may take up to a few of seconds. Load Ver-ID using the `load`
     VerID result;
 // Platform messages may fail, so we use a try/catch with the PlatformException
 try {
-//platformVersion = await Veridflutterplugin.platformVersion;
-result = await Veridflutterplugin
-        .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
-pluginProcessResult = "VerID instance loaded successfully.";
+    //platformVersion = await Veridflutterplugin.platformVersion;
+    result = await Veridflutterplugin
+            .load(); //.load('efe89f85-b71f-422b-a068-605c3f62603b');
+    pluginProcessResult = "VerID instance loaded successfully.";
 } on PlatformException catch (ex) {
-pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
-developer.log(ex.message.toString());
+    pluginProcessResult = 'Platform Exception: ' + ex.message.toString();
+    developer.log(ex.message.toString());
 }
 ~~~
 
@@ -139,22 +141,21 @@ Liveness detection sessions follow the same format as registration and authentic
 ~~~dart
 
 if (verID != null) {
-LivenessDetectionSessionSettings settings =
-new LivenessDetectionSessionSettings();
-VerID.captureLiveFace(settings: settings).then((value) {
-if (value == null) {
-throw 'Session canceled';
-}
-return value;
-});
+    LivenessDetectionSessionSettings settings = new LivenessDetectionSessionSettings();
+    VerID.captureLiveFace(settings: settings).then((value) {
+        if (value == null) {
+            throw 'Session canceled';
+        }
+        return value;
+    });
 } else {
-throw verIdNotInitialized;
-}
+    throw verIdNotInitialized;
 }
 ~~~
 
 ## Face detection session without asking for poses
 Similar to the above, with a couple of configuration options
+
 ~~~dart
 Future<SessionResult> captureLiveFaceWithoutPoses() async {
    if (verID != null) {
