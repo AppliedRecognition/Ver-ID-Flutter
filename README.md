@@ -39,7 +39,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 
 		~~~bash
         dependencies:
-            veridflutterplugin: '>=0.1.0'
+            veridflutterplugin: '>=1.0.0'
 		~~~
 
     1. Specify the repository (master branch):
@@ -178,7 +178,7 @@ Future<SessionResult> captureLiveFaceWithoutPoses() async {
 ~~~
 
 ## Session Response Format
-The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html) that represents the result of the session.
+The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Flutter/SessionResult/SessionResult-class.html) that represents the result of the session.
 
 ## Comparing Faces
 
@@ -205,7 +205,6 @@ Future<Face> detectFaceInImage(String imageData) async {
 ~~~
 
 ## Project Samples
-Project samples can be found on the samples branch of this repository, to be used as a reference for development purposes.
+Project samples can be found on the examples folder of this repository, to be used as a reference for development purposes.
 
-## Module API Reference
-- [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html)
+## [Module API Reference](https://appliedrecognition.github.io/Ver-ID-Flutter/)
