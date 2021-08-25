@@ -1,13 +1,13 @@
 name: veridflutterplugin
 description: Ver-ID face detection and recognition for Flutter, usable on Android and iOS devices
-version: 0.1.0
+version: 1.0.0
 homepage: https://github.com/AppliedRecognition/Ver-ID-Flutter
 repository: https://github.com/AppliedRecognition/Ver-ID-Flutter
 issue_tracker: https://github.com/AppliedRecognition/Ver-ID-Flutter/issues
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.20.0 <2.0.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
